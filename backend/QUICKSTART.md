@@ -43,8 +43,9 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Populate Wildlife Images
+### 3. Populate Wildlife Data
 
+#### A. Populate Wildlife Images (Required)
 Run this script to create the Elasticsearch index and add sample wildlife photos:
 
 ```bash
@@ -55,9 +56,46 @@ You should see:
 ```
 ✓ Index 'wildlife-images' created successfully
 ✓ Indexed: Great Blue Heron
-✓ Indexed: Spectacled Owl
+✓ Indexed: Green Sea Turtle
 ...
 ```
+
+#### B. Sync Species Database (Optional - Recommended)
+Run this to sync 71 wildlife species from Supabase to Elasticsearch:
+
+```bash
+python scripts/sync_supabase_to_elastic.py
+```
+
+You should see:
+```
+============================================================
+Wildlife Species Sync: Supabase → Elasticsearch
+============================================================
+
+[1/3] Fetching species from Supabase...
+✓ Fetched 71 species from Supabase
+
+[2/3] Creating/verifying Elasticsearch index...
+✓ Index 'wildlife-species' created successfully
+
+[3/3] Syncing species to Elasticsearch...
+✓ Successfully indexed 71 species to Elasticsearch
+
+============================================================
+✓ Sync completed successfully!
+
+Summary:
+  - Total species synced: 71
+  - By category:
+    • bird: 30
+    • mammal: 10
+    • plant: 24
+    • reptile: 7
+============================================================
+```
+
+This creates a searchable database of San San Pond Sak species including endangered manatees, sea turtles, jaguars, and primates.
 
 ### 4. Start the Backend Server
 

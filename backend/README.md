@@ -73,22 +73,27 @@ curl -X PUT "https://your-elasticsearch-url/wildlife-images" \
   }'
 ```
 
-### Index Sample Wildlife Photos
+### Populate Wildlife Data
 
+We provide scripts to easily populate your Elasticsearch indices:
+
+#### 1. Populate Wildlife Images (Required for image search)
 ```bash
-curl -X POST "https://your-elasticsearch-url/wildlife-images/_doc" \
-  -H "Authorization: ApiKey YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "photo_image_url": "https://images.pexels.com/photos/1661179/pexels-photo-1661179.jpeg",
-    "photo_description": "Great Blue Heron standing in shallow wetland waters",
-    "species_name": "Ardea herodias",
-    "common_name": "Great Blue Heron",
-    "location": "San San Pond Sak Wetlands"
-  }'
+python scripts/populate_wildlife_images.py
 ```
+This will create and populate the `wildlife-images` index with sample wildlife photos.
 
-You can use the [Pexels API](https://www.pexels.com/api/) to programmatically fetch wildlife images and index them.
+#### 2. Sync Species Database (Optional - For hackathon)
+```bash
+python scripts/sync_supabase_to_elastic.py
+```
+This syncs the 71 wildlife species from Supabase to Elasticsearch, creating a `wildlife-species` index with:
+- 30 bird species
+- 24 plant species
+- 10 mammal species
+- 7 reptile species (including 3 endangered sea turtles)
+
+**Note**: For the Elastic hackathon, we're using Elasticsearch as the primary database. Post-hackathon, the system will switch to Supabase as the primary database with Elasticsearch for search only.
 
 ## Running the Server
 
