@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, Volume2, VolumeX, History, Plus, X } from 'lucide-react';
+import { Send, Loader2, History, Plus, X } from 'lucide-react';
 import ImageLightbox from './ImageLightbox';
 import { createConversation, saveMessage, loadConversations, loadMessages, deleteConversation } from '../lib/conversationService';
 import type { Conversation } from '../lib/supabase';
@@ -9,7 +9,6 @@ interface Message {
   type: 'user' | 'assistant' | 'images';
   content: string;
   images?: ImageResult[];
-  audioUrl?: string;
 }
 
 interface ImageResult {
@@ -32,7 +31,6 @@ export default function ChatInterface() {
   const [input, setInput] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [showHistory, setShowHistory] = useState(false);
@@ -40,9 +38,6 @@ export default function ChatInterface() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const wsRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const currentMessageIdRef = useRef<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -53,7 +48,7 @@ export default function ChatInterface() {
   }, [messages]);
 
   useEffect(() => {
-    connectWebSocket();
+    setIsConnected(true);
     fetchConversations();
 
     return () => {
@@ -72,93 +67,72 @@ export default function ChatInterface() {
     }
   };
 
-  const connectWebSocket = () => {
-    const wsUrl = import.meta.env.VITE_BACKEND_WS_URL || 'ws://localhost:8000/ws';
+  const sendChatMessage = async (message: string) => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const functionUrl = `${supabaseUrl}/functions/v1/terratale-chat`;
 
     try {
-      const ws = new WebSocket(wsUrl);
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+          conversationId: currentConversationId,
+        }),
+      });
 
-      ws.onopen = () => {
-        setIsConnected(true);
-      };
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-      ws.onmessage = (event) => {
-        if (event.data instanceof Blob) {
-          audioChunksRef.current.push(event.data);
-          return;
+      const data = await response.json();
+
+      if (data.type === 'text') {
+        const messageId = Date.now().toString();
+        setMessages(prev => [...prev, {
+          id: messageId,
+          type: 'assistant',
+          content: data.content
+        }]);
+
+        if (currentConversationId) {
+          await saveMessage(currentConversationId, 'assistant', data.content);
         }
+      } else if (data.type === 'image_search_results') {
+        const newMessage = {
+          id: Date.now().toString(),
+          type: 'images' as const,
+          content: 'Here are the images I found:',
+          images: data.content
+        };
+        setMessages(prev => [...prev, newMessage]);
 
-        const data = JSON.parse(event.data);
-
-        if (data.type === 'text') {
-          const messageId = Date.now().toString();
-          currentMessageIdRef.current = messageId;
-          audioChunksRef.current = [];
-
-          setMessages(prev => [...prev, {
-            id: messageId,
-            type: 'assistant',
-            content: data.content
-          }]);
-          setIsLoading(false);
-
-          if (currentConversationId) {
-            saveMessage(currentConversationId, 'assistant', data.content).catch(console.error);
-          }
-        } else if (data.type === 'audio_end') {
-          if (audioChunksRef.current.length > 0 && currentMessageIdRef.current) {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mpeg' });
-            const audioUrl = URL.createObjectURL(audioBlob);
-
-            setMessages(prev => prev.map(msg =>
-              msg.id === currentMessageIdRef.current
-                ? { ...msg, audioUrl }
-                : msg
-            ));
-
-            audioChunksRef.current = [];
-          }
-        } else if (data.type === 'image_search_results') {
-          const newMessage = {
-            id: Date.now().toString(),
-            type: 'images' as const,
-            content: 'Here are the images I found:',
-            images: data.content
-          };
-          setMessages(prev => [...prev, newMessage]);
-          setIsLoading(false);
-
-          if (currentConversationId) {
-            saveMessage(currentConversationId, 'images', newMessage.content, undefined, data.content).catch(console.error);
-          }
-        } else if (data.type === 'error') {
-          setMessages(prev => [...prev, {
-            id: Date.now().toString(),
-            type: 'assistant',
-            content: `Error: ${data.content}`
-          }]);
-          setIsLoading(false);
+        if (currentConversationId) {
+          await saveMessage(currentConversationId, 'images', newMessage.content, undefined, data.content);
         }
-      };
-
-      ws.onerror = () => {
-        setIsConnected(false);
-        setIsLoading(false);
-      };
-
-      ws.onclose = () => {
-        setIsConnected(false);
-        setIsLoading(false);
-      };
-
-      wsRef.current = ws;
+      } else if (data.type === 'error') {
+        setMessages(prev => [...prev, {
+          id: Date.now().toString(),
+          type: 'assistant',
+          content: `Error: ${data.content}`
+        }]);
+      }
     } catch (error) {
-      setIsConnected(false);
+      console.error('Chat error:', error);
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        type: 'assistant',
+        content: 'Sorry, I encountered an error. Please try again.'
+      }]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSend = async () => {
-    if (!input.trim() || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+    if (!input.trim() || !isConnected) {
       return;
     }
 
@@ -168,47 +142,31 @@ export default function ChatInterface() {
       content: input
     };
 
+    const messageToSend = input;
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
+    setInput('');
 
     try {
       if (!currentConversationId) {
-        const newConvId = await createConversation(input);
+        const newConvId = await createConversation(messageToSend);
         setCurrentConversationId(newConvId);
-        await saveMessage(newConvId, 'user', input);
+        await saveMessage(newConvId, 'user', messageToSend);
         await fetchConversations();
       } else {
-        await saveMessage(currentConversationId, 'user', input);
+        await saveMessage(currentConversationId, 'user', messageToSend);
       }
     } catch (error) {
       console.error('Failed to save message:', error);
     }
 
-    wsRef.current.send(input);
-    setInput('');
+    await sendChatMessage(messageToSend);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
-    }
-  };
-
-  const toggleAudio = (messageId: string, audioUrl: string) => {
-    if (playingAudioId === messageId) {
-      audioRef.current?.pause();
-      setPlayingAudioId(null);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-
-      const audio = new Audio(audioUrl);
-      audio.onended = () => setPlayingAudioId(null);
-      audio.play();
-      audioRef.current = audio;
-      setPlayingAudioId(messageId);
     }
   };
 
@@ -231,7 +189,6 @@ export default function ChatInterface() {
         id: msg.id,
         type: msg.type,
         content: msg.content,
-        audioUrl: msg.audio_url,
         images: msg.images
       }));
       setMessages(formattedMessages);
@@ -263,13 +220,6 @@ export default function ChatInterface() {
     setLightboxIndex(index);
   };
 
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-    };
-  }, []);
 
   return (
     <section id="explore" className="bg-white py-16 px-6">
@@ -301,7 +251,7 @@ export default function ChatInterface() {
           </p>
           {!isConnected && (
             <div className="mt-4 text-sm text-amber-700 bg-amber-50 px-4 py-2 rounded-lg inline-block">
-              Connecting to backend...
+              Initializing...
             </div>
           )}
         </div>
@@ -374,27 +324,7 @@ export default function ChatInterface() {
                       </div>
                     </div>
                   ) : (
-                    <div>
-                      <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                      {message.audioUrl && message.type === 'assistant' && (
-                        <button
-                          onClick={() => toggleAudio(message.id, message.audioUrl!)}
-                          className="mt-3 flex items-center gap-2 text-sm text-stone-600 hover:text-stone-900 transition-colors"
-                        >
-                          {playingAudioId === message.id ? (
-                            <>
-                              <VolumeX className="w-4 h-4" />
-                              <span>Stop</span>
-                            </>
-                          ) : (
-                            <>
-                              <Volume2 className="w-4 h-4" />
-                              <span>Listen</span>
-                            </>
-                          )}
-                        </button>
-                      )}
-                    </div>
+                    <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
                   )}
                 </div>
               </div>
