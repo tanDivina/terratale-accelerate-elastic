@@ -231,6 +231,102 @@ SAMPLE_WILDLIFE_DATA = [
         "common_name": "Red-eyed Tree Frog",
         "location": "San San Pond Sak Wetlands",
         "conservation_status": "Least Concern"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/2252618/pexels-photo-2252618.jpeg",
+        "photo_description": "Water hyacinth floating on wetland waters with attractive purple flowers",
+        "species_name": "Eichhornia crassipes",
+        "common_name": "Water Hyacinth",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Aquatic Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/6775268/pexels-photo-6775268.jpeg",
+        "photo_description": "Water lettuce floating in wetland, resembling a head of lettuce",
+        "species_name": "Pistia stratiotes",
+        "common_name": "Water Lettuce",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Aquatic Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/6894335/pexels-photo-6894335.jpeg",
+        "photo_description": "Yellow allamanda with bright golden flowers in tropical wetland habitat",
+        "species_name": "Allamanda cathartica",
+        "common_name": "Yellow Allamanda",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/3493777/pexels-photo-3493777.jpeg",
+        "photo_description": "Green basilisk lizard running across water surface, famous Jesus Christ lizard",
+        "species_name": "Basiliscus plumifrons",
+        "common_name": "Green Basilisk (Jesus Christ Lizard)",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Least Concern"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/4666748/pexels-photo-4666748.jpeg",
+        "photo_description": "Neotropical otter hunting in freshwater streams, agile aquatic predator",
+        "species_name": "Lontra longicaudis",
+        "common_name": "Neotropical Otter",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Near Threatened"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/3490257/pexels-photo-3490257.jpeg",
+        "photo_description": "White-faced capuchin monkey foraging near water in tropical forest",
+        "species_name": "Cebus capucinus",
+        "common_name": "White-faced Capuchin Monkey",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Least Concern"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/2253018/pexels-photo-2253018.jpeg",
+        "photo_description": "Jaguar stalking through wetland habitat, apex predator of Central America",
+        "species_name": "Panthera onca",
+        "common_name": "Jaguar",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Near Threatened"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/3493777/pexels-photo-3493777.jpeg",
+        "photo_description": "Roseate spoonbill with distinctive pink plumage feeding in shallow waters",
+        "species_name": "Platalea ajaja",
+        "common_name": "Roseate Spoonbill",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Least Concern"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/1661179/pexels-photo-1661179.jpeg",
+        "photo_description": "Anhinga drying its wings after diving for fish, also known as snakebird",
+        "species_name": "Anhinga anhinga",
+        "common_name": "Anhinga (Snakebird)",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Least Concern"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/1661179/pexels-photo-1661179.jpeg",
+        "photo_description": "Great egret wading through shallow wetland waters hunting for fish",
+        "species_name": "Ardea alba",
+        "common_name": "Great Egret",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Least Concern"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/2317904/pexels-photo-2317904.jpeg",
+        "photo_description": "Snail kite raptor hunting for apple snails in wetland marshes",
+        "species_name": "Rostrhamus sociabilis",
+        "common_name": "Snail Kite",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Least Concern"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/4666748/pexels-photo-4666748.jpeg",
+        "photo_description": "Osprey diving for fish near wetland waters, skilled fish-eating raptor",
+        "species_name": "Pandion haliaetus",
+        "common_name": "Osprey",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Least Concern"
     }
 ]
 
