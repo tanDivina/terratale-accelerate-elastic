@@ -35,14 +35,15 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    const geminiApiKey = Deno.env.get('GOOGLE_API_KEY');
     const elasticUrl = Deno.env.get('ELASTIC_CLOUD_URL');
     const elasticApiKey = Deno.env.get('ELASTIC_API_KEY');
 
-    if (!elasticUrl || !elasticApiKey) {
+    if (!geminiApiKey) {
       return new Response(
         JSON.stringify({
           type: 'text',
-          content: 'The chat service is not fully configured yet. Please set up the ELASTIC_CLOUD_URL and ELASTIC_API_KEY environment variables in your Supabase project settings.',
+          content: 'The chat service is not fully configured yet. Please set up the GOOGLE_API_KEY environment variable in your Supabase project settings.',
         }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -65,7 +66,7 @@ Deno.serve(async (req: Request) => {
     const messageLower = message.toLowerCase();
     const shouldSearchImages = checkIfImageSearch(messageLower);
 
-    if (shouldSearchImages) {
+    if (shouldSearchImages && elasticUrl && elasticApiKey) {
       const images = await searchWildlifeImages(messageLower);
       return new Response(
         JSON.stringify({
@@ -78,7 +79,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const response = await queryElasticAgent(message, conversationId);
+    const response = await queryGemini(message, conversationId);
 
     return new Response(
       JSON.stringify({
@@ -95,7 +96,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         type: 'text',
-        content: `I apologize, but I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please make sure the Edge Function is properly configured with Elastic credentials.`,
+        content: `I apologize, but I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please make sure the Edge Function is properly configured.`,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -175,28 +176,46 @@ async function searchWildlifeImages(query: string): Promise<any[]> {
   }));
 }
 
-async function queryElasticAgent(
+async function queryGemini(
   input: string,
   conversationId?: string
 ): Promise<string> {
-  const elasticUrl = Deno.env.get('ELASTIC_CLOUD_URL');
-  const elasticApiKey = Deno.env.get('ELASTIC_API_KEY');
-  const inferenceEndpoint = '.rainbow-sprinkles-elastic';
+  const geminiApiKey = Deno.env.get('GOOGLE_API_KEY');
+  const geminiModel = Deno.env.get('GEMINI_MODEL') || 'gemini-2.0-flash-exp';
 
-  if (!elasticUrl || !elasticApiKey) {
-    throw new Error('Elastic credentials not configured');
+  if (!geminiApiKey) {
+    throw new Error('Gemini API key not configured');
   }
 
-  const inferenceUrl = `${elasticUrl.replace(/\/$/, '')}/_inference/${inferenceEndpoint}`;
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiApiKey}`;
+
+  const systemPrompt = `You are TerraTale AI, a knowledgeable guide for the San San Pond Sak Wetlands in Bocas del Toro, Panama.
+
+You help visitors:
+- Learn about the wetlands' diverse wildlife including jaguars, manatees, sea turtles, and hundreds of bird species
+- Understand the importance of this Ramsar-designated protected area
+- Explore the unique ecosystem including mangroves, peat swamps, and coastal forests
+- Discover conservation efforts and sustainable tourism practices
+
+Provide engaging, educational responses that inspire appreciation for this natural treasure. Keep responses concise and conversational.`;
 
   const payload = {
-    input: input,
+    contents: [{
+      parts: [{
+        text: `${systemPrompt}\n\nUser question: ${input}`
+      }]
+    }],
+    generationConfig: {
+      temperature: 0.7,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 1024,
+    }
   };
 
-  const response = await fetch(inferenceUrl, {
+  const response = await fetch(geminiUrl, {
     method: 'POST',
     headers: {
-      'Authorization': `ApiKey ${elasticApiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
@@ -204,13 +223,13 @@ async function queryElasticAgent(
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('Elastic inference error:', errorText);
-    throw new Error(`Elastic inference failed (${response.status}): ${response.statusText}. Check that ELASTIC_CLOUD_URL is your Elasticsearch cluster URL.`);
+    console.error('Gemini API error:', errorText);
+    throw new Error(`Gemini API failed (${response.status}): ${response.statusText}`);
   }
 
   const result = await response.json();
 
-  const completionText = result.completion?.[0]?.result || '';
+  const completionText = result.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
   return completionText || 'I apologize, but I could not generate a response.';
 }
