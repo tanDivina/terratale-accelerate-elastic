@@ -41,7 +41,10 @@ Deno.serve(async (req: Request) => {
           match_all: {}
         },
         size: size,
-        sort: [{ "common_name.keyword": "asc" }]
+        sort: [{ "common_name.keyword": "asc" }],
+        collapse: {
+          field: "species_name.keyword"
+        }
       };
     } else {
       elasticQuery = {
@@ -52,7 +55,10 @@ Deno.serve(async (req: Request) => {
             fuzziness: "AUTO"
           }
         },
-        size: size
+        size: size,
+        collapse: {
+          field: "species_name.keyword"
+        }
       };
     }
 
