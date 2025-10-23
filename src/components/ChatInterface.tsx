@@ -278,42 +278,33 @@ export default function ChatInterface() {
 
 
   return (
-    <section id="explore" className="bg-white py-16 px-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <h2 className="text-4xl md:text-5xl text-stone-900">
-              <span className="italic">Ask</span> Terratale
-            </h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setShowHistory(!showHistory)}
-                className="p-2 rounded-full hover:bg-stone-100 transition-colors"
-                title="View conversation history"
-              >
-                <History className="w-5 h-5 text-stone-600" />
-              </button>
-              <button
-                onClick={startNewConversation}
-                className="p-2 rounded-full hover:bg-stone-100 transition-colors"
-                title="Start new conversation"
-              >
-                <Plus className="w-5 h-5 text-stone-600" />
-              </button>
-            </div>
-          </div>
-          <p className="text-stone-600">
-            Your AI guide to the San San Pond Sak Wetlands
-          </p>
-          {!isConnected && (
-            <div className="mt-4 text-sm text-amber-700 bg-amber-50 px-4 py-2 rounded-lg inline-block">
-              Initializing...
-            </div>
-          )}
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            title="View conversation history"
+          >
+            <History className="w-5 h-5 text-gray-600" />
+          </button>
+          <button
+            onClick={startNewConversation}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            title="Start new conversation"
+          >
+            <Plus className="w-5 h-5 text-gray-600" />
+          </button>
         </div>
+        {!isConnected && (
+          <div className="text-sm text-amber-700 bg-amber-50 px-3 py-1 rounded-lg">
+            Initializing...
+          </div>
+        )}
+      </div>
 
-        {showHistory && (
-          <div className="mb-6 bg-stone-100 rounded-2xl p-6 max-h-64 overflow-y-auto">
+      {showHistory && (
+        <div className="p-4 bg-gray-50 border-b border-gray-200 max-h-64 overflow-y-auto">
             <h3 className="text-lg font-semibold text-stone-900 mb-4">Recent Conversations</h3>
             {conversations.length === 0 ? (
               <p className="text-stone-600 text-sm">No conversations yet</p>
@@ -346,8 +337,7 @@ export default function ChatInterface() {
           </div>
         )}
 
-        <div className="bg-stone-50 rounded-2xl shadow-lg overflow-hidden">
-          <div className="h-[500px] overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -385,17 +375,17 @@ export default function ChatInterface() {
                 </div>
               </div>
             ))}
-            {isLoading && (
-              <div className="flex justify-start">
-                <div className="bg-white rounded-2xl px-5 py-3 shadow-sm">
-                  <Loader2 className="w-5 h-5 animate-spin text-stone-600" />
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-white rounded-2xl px-5 py-3 shadow-sm">
+              <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
+            </div>
           </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
 
-          <div className="border-t border-stone-200 p-4 bg-white">
+      <div className="border-t border-gray-200 p-4 bg-white">
             <div className="flex gap-3">
               <button
                 onClick={toggleRecording}
@@ -422,22 +412,20 @@ export default function ChatInterface() {
                 onClick={handleSend}
                 disabled={!input.trim() || !isConnected || isLoading || isRecording}
                 className="bg-stone-900 text-white px-6 py-3 rounded-full hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          >
+            <Send className="w-4 h-4" />
+          </button>
         </div>
-
-        {lightboxImages.length > 0 && (
-          <ImageLightbox
-            images={lightboxImages}
-            currentIndex={lightboxIndex}
-            onClose={() => setLightboxImages([])}
-            onNavigate={setLightboxIndex}
-          />
-        )}
       </div>
-    </section>
+
+      {lightboxImages.length > 0 && (
+        <ImageLightbox
+          images={lightboxImages}
+          currentIndex={lightboxIndex}
+          onClose={() => setLightboxImages([])}
+          onNavigate={setLightboxIndex}
+        />
+      )}
+    </div>
   );
 }
