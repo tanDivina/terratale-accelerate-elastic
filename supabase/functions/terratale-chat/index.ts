@@ -181,28 +181,22 @@ async function queryElasticAgent(
 ): Promise<string> {
   const elasticUrl = Deno.env.get('ELASTIC_CLOUD_URL');
   const elasticApiKey = Deno.env.get('ELASTIC_API_KEY');
-  const agentId = Deno.env.get('ELASTIC_AGENT_ID') || 'terratale-qa-agent';
+  const inferenceEndpoint = '.rainbow-sprinkles-elastic';
 
   if (!elasticUrl || !elasticApiKey) {
     throw new Error('Elastic credentials not configured');
   }
 
-  const converseUrl = `${elasticUrl.replace(/\/$/, '')}/api/agent_builder/converse/async`;
+  const inferenceUrl = `${elasticUrl.replace(/\/$/, '')}/_inference/${inferenceEndpoint}`;
 
-  const payload: any = {
+  const payload = {
     input: input,
-    agent_id: agentId,
   };
 
-  if (conversationId) {
-    payload.conversation_id = conversationId;
-  }
-
-  const response = await fetch(converseUrl, {
+  const response = await fetch(inferenceUrl, {
     method: 'POST',
     headers: {
       'Authorization': `ApiKey ${elasticApiKey}`,
-      'kbn-xsrf': 'true',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
@@ -210,38 +204,13 @@ async function queryElasticAgent(
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('Elastic agent error:', errorText);
-    throw new Error(`Elastic agent failed (${response.status}): ${response.statusText}. Check that ELASTIC_CLOUD_URL is your Kibana URL (not Elasticsearch cluster URL) and ELASTIC_AGENT_ID matches your agent name.`);
+    console.error('Elastic inference error:', errorText);
+    throw new Error(`Elastic inference failed (${response.status}): ${response.statusText}. Check that ELASTIC_CLOUD_URL is your Elasticsearch cluster URL.`);
   }
 
-  let fullResponse = '';
-  const reader = response.body?.getReader();
-  const decoder = new TextDecoder();
+  const result = await response.json();
 
-  if (!reader) {
-    throw new Error('No response body');
-  }
+  const completionText = result.completion?.[0]?.result || '';
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    const chunk = decoder.decode(value, { stream: true });
-    const lines = chunk.split('\n');
-
-    for (const line of lines) {
-      if (line.trim() && line.startsWith('data: ')) {
-        try {
-          const data = JSON.parse(line.slice(6));
-          if (data.type === 'content' && data.content) {
-            fullResponse += data.content;
-          }
-        } catch (e) {
-          console.error('Failed to parse SSE data:', e);
-        }
-      }
-    }
-  }
-
-  return fullResponse || 'I apologize, but I could not generate a response.';
+  return completionText || 'I apologize, but I could not generate a response.';
 }
