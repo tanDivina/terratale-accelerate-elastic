@@ -209,7 +209,9 @@ async function queryElasticAgent(
   });
 
   if (!response.ok) {
-    throw new Error(`Elastic agent failed: ${response.statusText}`);
+    const errorText = await response.text();
+    console.error('Elastic agent error:', errorText);
+    throw new Error(`Elastic agent failed (${response.status}): ${response.statusText}. Check that ELASTIC_CLOUD_URL is your Kibana URL (not Elasticsearch cluster URL) and ELASTIC_AGENT_ID matches your agent name.`);
   }
 
   let fullResponse = '';
