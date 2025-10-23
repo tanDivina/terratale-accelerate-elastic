@@ -327,6 +327,54 @@ SAMPLE_WILDLIFE_DATA = [
         "common_name": "Osprey",
         "location": "San San Pond Sak Wetlands",
         "conservation_status": "Least Concern"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/6775268/pexels-photo-6775268.jpeg",
+        "photo_description": "Castaño wetland plant with large leaves, important aquatic vegetation",
+        "species_name": "Montrichardia arborescens",
+        "common_name": "Castaño",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Aquatic Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/6894276/pexels-photo-6894276.jpeg",
+        "photo_description": "Caña blanca tall grass growing in wetland margins, forms dense stands",
+        "species_name": "Gynerium sagittatum",
+        "common_name": "Caña Blanca",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg",
+        "photo_description": "Negra jorra fern in coastal wetlands, salt-tolerant species",
+        "species_name": "Acrostichum aureum",
+        "common_name": "Negra Jorra",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/2252618/pexels-photo-2252618.jpeg",
+        "photo_description": "Lirio wetland lily with white fragrant flowers",
+        "species_name": "Hymenocallis pedalis",
+        "common_name": "Lirio",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Aquatic Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/6775268/pexels-photo-6775268.jpeg",
+        "photo_description": "Urospatha aquatic aroid in shaded wetland areas",
+        "species_name": "Urospatha friedrichsthalii",
+        "common_name": "Urospatha",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Aquatic Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/6894276/pexels-photo-6894276.jpeg",
+        "photo_description": "Cyperus sedge forming dense colonies in wetland margins",
+        "species_name": "Cyperus luzulae",
+        "common_name": "Cyperus",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
     }
 ]
 
