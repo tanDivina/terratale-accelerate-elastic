@@ -69,6 +69,7 @@ export default function ChatInterface() {
 
   const sendChatMessage = async (message: string) => {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
     const functionUrl = `${supabaseUrl}/functions/v1/terratale-chat`;
 
     try {
@@ -76,6 +77,7 @@ export default function ChatInterface() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseKey}`,
         },
         body: JSON.stringify({
           message,
