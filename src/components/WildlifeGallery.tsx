@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import ImageLightbox from './ImageLightbox';
 
 interface WildlifeImage {
@@ -15,45 +14,55 @@ interface WildlifeImage {
 
 export default function WildlifeGallery() {
   const [images, setImages] = useState<WildlifeImage[]>([]);
-  const [filteredImages, setFilteredImages] = useState<WildlifeImage[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<WildlifeImage | null>(null);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
-    fetchImages();
+    fetchImages('');
   }, []);
 
   useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredImages(images);
+    const debounceTimer = setTimeout(() => {
+      fetchImages(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm]);
+
+  async function fetchImages(query: string) {
+    if (query === '') {
+      setLoading(true);
     } else {
-      const term = searchTerm.toLowerCase();
-      const filtered = images.filter(img =>
-        img.common_name.toLowerCase().includes(term) ||
-        img.species_name.toLowerCase().includes(term) ||
-        img.photo_description.toLowerCase().includes(term) ||
-        (img.conservation_status && img.conservation_status.toLowerCase().includes(term))
-      );
-      setFilteredImages(filtered);
+      setSearching(true);
     }
-  }, [searchTerm, images]);
 
-  async function fetchImages() {
     try {
-      const { data, error } = await supabase
-        .from('wildlife_images')
-        .select('*')
-        .order('common_name');
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-      if (error) throw error;
+      const apiUrl = `${supabaseUrl}/functions/v1/wildlife-search?q=${encodeURIComponent(query)}`;
 
-      setImages(data || []);
-      setFilteredImages(data || []);
+      const response = await fetch(apiUrl, {
+        headers: {
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch images: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setImages(result.images || []);
     } catch (error) {
       console.error('Error fetching wildlife images:', error);
+      setImages([]);
     } finally {
       setLoading(false);
+      setSearching(false);
     }
   }
 
@@ -91,19 +100,19 @@ export default function WildlifeGallery() {
             )}
           </div>
 
-          {searchTerm && (
+          {searchTerm && !searching && (
             <p className="mt-4 text-stone-600">
-              Found {filteredImages.length} {filteredImages.length === 1 ? 'result' : 'results'}
+              Found {images.length} {images.length === 1 ? 'result' : 'results'}
             </p>
           )}
         </div>
 
-        {loading ? (
+        {loading || searching ? (
           <div className="text-center py-12">
             <div className="inline-block w-8 h-8 border-4 border-stone-300 border-t-stone-600 rounded-full animate-spin"></div>
-            <p className="mt-4 text-stone-600">Loading wildlife gallery...</p>
+            <p className="mt-4 text-stone-600">{searching ? 'Searching...' : 'Loading wildlife gallery...'}</p>
           </div>
-        ) : filteredImages.length === 0 ? (
+        ) : images.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-stone-600 text-lg">
               {searchTerm ? 'No species found matching your search.' : 'No wildlife images available.'}
@@ -111,7 +120,7 @@ export default function WildlifeGallery() {
           </div>
         ) : (
           <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredImages.map((image) => (
+            {images.map((image) => (
               <div
                 key={image.id}
                 className="group cursor-pointer"
