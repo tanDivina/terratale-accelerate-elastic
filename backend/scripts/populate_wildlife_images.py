@@ -1,12 +1,12 @@
 """
-Script to populate Elasticsearch with sample wildlife images from San San Pond Sak Wetlands.
-Uses Pexels stock photos for demonstration purposes.
-Now includes all 71 species from the Supabase wildlife_species table.
+Script to populate Elasticsearch with wildlife images from San San Pond Sak Wetlands.
+Fetches real species-specific photos from Wikimedia Commons API.
+Falls back to Pexels stock photos if Wikimedia images are not available.
 """
 
 import asyncio
 import httpx
-from typing import List, Dict
+from typing import List, Dict, Optional
 import os
 from dotenv import load_dotenv
 
@@ -15,6 +15,9 @@ load_dotenv()
 ELASTIC_CLOUD_URL = os.getenv("ELASTIC_CLOUD_URL", "").rstrip('/')
 ELASTIC_API_KEY = os.getenv("ELASTIC_API_KEY", "")
 WILDLIFE_IMAGE_INDEX = os.getenv("WILDLIFE_IMAGE_INDEX", "wildlife-images")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip('/')
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
+WIKIMEDIA_API_URL = "https://commons.wikimedia.org/w/api.php"
 
 SAMPLE_WILDLIFE_DATA = [
     # BIRDS (30 species)
@@ -340,6 +343,14 @@ SAMPLE_WILDLIFE_DATA = [
         "location": "San San Pond Sak Wetlands",
         "conservation_status": "Least Concern"
     },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/3493777/pexels-photo-3493777.jpeg",
+        "photo_description": "Nutria neotropical (Neotropical Otter) swimming in wetland streams",
+        "species_name": "Lontra longicaudis",
+        "common_name": "Nutria neotropical",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Near Threatened"
+    },
 
     # PLANTS (24 species)
     {
@@ -648,20 +659,161 @@ async def index_document(doc: Dict):
             print(f"✗ Error indexing {doc['common_name']}: {e}")
 
 
+async def search_wikimedia_image(species_name: str) -> Optional[str]:
+    """
+    Search for an image on Wikimedia Commons by scientific name.
+    Returns the URL of the first suitable image found.
+    """
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        # Try to find images in a category matching the scientific name
+        params = {
+            "action": "query",
+            "generator": "categorymembers",
+            "gcmtitle": f"Category:{species_name}",
+            "gcmlimit": "5",
+            "gcmtype": "file",
+            "prop": "imageinfo",
+            "iiprop": "url|size|mime",
+            "iiurlwidth": "800",
+            "format": "json"
+        }
+
+        try:
+            response = await client.get(WIKIMEDIA_API_URL, params=params)
+            data = response.json()
+
+            if "query" in data and "pages" in data["query"]:
+                for page in data["query"]["pages"].values():
+                    if "imageinfo" in page:
+                        image_info = page["imageinfo"][0]
+                        if image_info.get("mime") in ["image/jpeg", "image/png"]:
+                            return image_info.get("url")
+
+            # If category search fails, try searching by title
+            search_params = {
+                "action": "query",
+                "generator": "search",
+                "gsrsearch": f"File:{species_name}",
+                "gsrlimit": "5",
+                "gsrnamespace": "6",
+                "prop": "imageinfo",
+                "iiprop": "url|size|mime",
+                "iiurlwidth": "800",
+                "format": "json"
+            }
+
+            response = await client.get(WIKIMEDIA_API_URL, params=search_params)
+            data = response.json()
+
+            if "query" in data and "pages" in data["query"]:
+                for page in data["query"]["pages"].values():
+                    if "imageinfo" in page:
+                        image_info = page["imageinfo"][0]
+                        if image_info.get("mime") in ["image/jpeg", "image/png"]:
+                            return image_info.get("url")
+
+            return None
+
+        except Exception as e:
+            print(f"  ⚠ Wikimedia search error: {e}")
+            return None
+
+
+async def get_species_from_supabase() -> List[Dict]:
+    """Fetch all species from Supabase wildlife_species table."""
+    url = f"{SUPABASE_URL}/rest/v1/wildlife_species?select=id,scientific_name,common_name,conservation_status,category"
+    headers = {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
+    }
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            response = await client.get(url, headers=headers)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(f"✗ Failed to fetch species: {response.status_code}")
+                return []
+        except Exception as e:
+            print(f"✗ Error fetching from Supabase: {e}")
+            return []
+
+
 async def populate_wildlife_images():
-    """Main function to populate the index"""
-    print("Starting wildlife image population...")
+    """Main function to populate the index with Wikimedia images"""
+    print("=" * 60)
+    print("Wildlife Image Population: Wikimedia Commons → Elasticsearch")
+    print("=" * 60)
     print(f"Target index: {WILDLIFE_IMAGE_INDEX}")
     print(f"Elastic URL: {ELASTIC_CLOUD_URL}\n")
 
     await create_index()
 
-    print(f"\nIndexing {len(SAMPLE_WILDLIFE_DATA)} wildlife documents...\n")
+    print("\nFetching species from Supabase...")
+    species_list = await get_species_from_supabase()
 
-    for doc in SAMPLE_WILDLIFE_DATA:
-        await index_document(doc)
+    if not species_list:
+        print("✗ No species found. Using fallback sample data...\n")
+        print(f"Indexing {len(SAMPLE_WILDLIFE_DATA)} sample documents...\n")
+        for doc in SAMPLE_WILDLIFE_DATA:
+            await index_document(doc)
+        print(f"\n✓ Finished indexing {len(SAMPLE_WILDLIFE_DATA)} documents")
+        return
 
-    print(f"\n✓ Finished indexing {len(SAMPLE_WILDLIFE_DATA)} documents")
+    print(f"✓ Found {len(species_list)} species\n")
+    print("Fetching images from Wikimedia Commons...\n")
+
+    success_count = 0
+    fallback_count = 0
+    failed_count = 0
+
+    for species in species_list:
+        scientific_name = species.get("scientific_name")
+        common_name = species.get("common_name")
+        conservation_status = species.get("conservation_status", "Unknown")
+
+        if not scientific_name:
+            continue
+
+        print(f"Processing {common_name} ({scientific_name})...")
+
+        # Try to get image from Wikimedia
+        wikimedia_url = await search_wikimedia_image(scientific_name)
+
+        if wikimedia_url:
+            doc = {
+                "photo_image_url": wikimedia_url,
+                "photo_description": f"{common_name} ({scientific_name}) - Image from Wikimedia Commons",
+                "species_name": scientific_name,
+                "common_name": common_name,
+                "location": "San San Pond Sak Wetlands",
+                "conservation_status": conservation_status
+            }
+            await index_document(doc)
+            success_count += 1
+            print(f"  ✓ Indexed with Wikimedia image")
+        else:
+            # Try to find matching sample data as fallback
+            fallback_doc = next((d for d in SAMPLE_WILDLIFE_DATA if d["species_name"] == scientific_name), None)
+            if fallback_doc:
+                await index_document(fallback_doc)
+                fallback_count += 1
+                print(f"  ⚠ Using fallback Pexels image")
+            else:
+                failed_count += 1
+                print(f"  ✗ No image found")
+
+        # Be nice to Wikimedia API
+        await asyncio.sleep(0.5)
+
+    print("\n" + "=" * 60)
+    print("Summary:")
+    print(f"  ✓ Wikimedia images: {success_count}")
+    print(f"  ⚠ Fallback images: {fallback_count}")
+    print(f"  ✗ No images found: {failed_count}")
+    print(f"  Total processed: {len(species_list)}")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
