@@ -399,6 +399,22 @@ SAMPLE_WILDLIFE_DATA = [
         "common_name": "Cyperus",
         "location": "San San Pond Sak Wetlands",
         "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/1770809/pexels-photo-1770809.jpeg",
+        "photo_description": "Mangle blanco mangrove tree with distinctive white bark in coastal wetlands",
+        "species_name": "Laguncularia racemosa",
+        "common_name": "Mangle Blanco",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Mangrove"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/3687770/pexels-photo-3687770.jpeg",
+        "photo_description": "Majagüillo hibiscus with large pink flowers in wetland margins",
+        "species_name": "Hibiscus pernambucensis",
+        "common_name": "Majagüillo",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
     }
 ]
 
