@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, History, Plus, X } from 'lucide-react';
+import { Send, Loader2, History, Plus, X, Mic, MicOff } from 'lucide-react';
 import ImageLightbox from './ImageLightbox';
 import { createConversation, saveMessage, loadConversations, loadMessages, deleteConversation } from '../lib/conversationService';
 import type { Conversation } from '../lib/supabase';
@@ -31,6 +31,7 @@ export default function ChatInterface() {
   const [input, setInput] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [showHistory, setShowHistory] = useState(false);
@@ -38,6 +39,9 @@ export default function ChatInterface() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const wsRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recognitionRef = useRef<any>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -50,13 +54,44 @@ export default function ChatInterface() {
   useEffect(() => {
     setIsConnected(true);
     fetchConversations();
+    initializeSpeechRecognition();
 
     return () => {
       if (wsRef.current) {
         wsRef.current.close();
       }
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
     };
   }, []);
+
+  const initializeSpeechRecognition = () => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(prev => prev + (prev ? ' ' : '') + transcript);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsRecording(false);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  };
 
   const fetchConversations = async () => {
     try {
@@ -169,6 +204,25 @@ export default function ChatInterface() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const toggleRecording = () => {
+    if (!recognitionRef.current) {
+      alert('Speech recognition is not supported in your browser. Please try Chrome or Edge.');
+      return;
+    }
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsRecording(true);
+      } catch (error) {
+        console.error('Error starting recognition:', error);
+      }
     }
   };
 
@@ -343,6 +397,18 @@ export default function ChatInterface() {
 
           <div className="border-t border-stone-200 p-4 bg-white">
             <div className="flex gap-3">
+              <button
+                onClick={toggleRecording}
+                disabled={!isConnected || isLoading}
+                className={`px-4 py-3 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
+                  isRecording
+                    ? 'bg-red-600 text-white hover:bg-red-700 animate-pulse'
+                    : 'bg-stone-200 text-stone-700 hover:bg-stone-300'
+                }`}
+                title={isRecording ? 'Stop recording' : 'Start voice input'}
+              >
+                {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </button>
               <input
                 type="text"
                 value={input}
@@ -350,11 +416,11 @@ export default function ChatInterface() {
                 onKeyPress={handleKeyPress}
                 placeholder="Ask about wildlife or describe what you saw..."
                 className="flex-1 px-5 py-3 border border-stone-300 rounded-full focus:outline-none focus:border-stone-500 focus:ring-2 focus:ring-stone-200 transition-all"
-                disabled={!isConnected}
+                disabled={!isConnected || isRecording}
               />
               <button
                 onClick={handleSend}
-                disabled={!input.trim() || !isConnected || isLoading}
+                disabled={!input.trim() || !isConnected || isLoading || isRecording}
                 className="bg-stone-900 text-white px-6 py-3 rounded-full hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 <Send className="w-4 h-4" />
