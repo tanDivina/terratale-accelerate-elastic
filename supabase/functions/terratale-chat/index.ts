@@ -105,26 +105,23 @@ Deno.serve(async (req: Request) => {
 });
 
 function checkIfImageSearch(message: string): boolean {
-  const imageKeywords = [
-    'show', 'see', 'picture', 'photo', 'image', 'look', 'view',
-    'what does', 'how does', 'appearance', 'looks like'
+  const explicitImageKeywords = [
+    'show me', 'show images', 'show pictures', 'show photos',
+    'pictures of', 'photos of', 'images of'
   ];
 
-  const animalKeywords = [
-    'bird', 'fish', 'manatee', 'dolphin', 'heron', 'kingfisher',
-    'turtle', 'sloth', 'monkey', 'iguana', 'crab', 'butterfly',
-    'frog', 'snake', 'lizard', 'bat', 'otter', 'caiman'
-  ];
-
-  for (const keyword of imageKeywords) {
-    if (message.includes(keyword)) return true;
+  for (const phrase of explicitImageKeywords) {
+    if (message.includes(phrase)) return true;
   }
 
-  for (const animal of animalKeywords) {
-    if (message.includes(animal)) {
-      const hasVisualContext = imageKeywords.some(k => message.includes(k));
-      if (hasVisualContext) return true;
-    }
+  const questionPatterns = [
+    'what is', 'what could', 'what might', 'what would',
+    'i saw', 'i spotted', 'i found', 'i noticed',
+    'looks like', 'resembles', 'similar to', 'reminds me'
+  ];
+
+  for (const pattern of questionPatterns) {
+    if (message.includes(pattern)) return false;
   }
 
   return false;
