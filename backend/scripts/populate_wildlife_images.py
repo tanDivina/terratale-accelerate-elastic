@@ -415,6 +415,30 @@ SAMPLE_WILDLIFE_DATA = [
         "common_name": "Majagüillo",
         "location": "San San Pond Sak Wetlands",
         "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/6775091/pexels-photo-6775091.jpeg",
+        "photo_description": "Mangle cimarrón shrub with aromatic leaves in wetland areas",
+        "species_name": "Myrica mexicana",
+        "common_name": "Mangle Cimarrón",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/3687770/pexels-photo-3687770.jpeg",
+        "photo_description": "Mangle cimarrón tree with white flower clusters in swamp forests",
+        "species_name": "Cyrilla racemiflora",
+        "common_name": "Mangle Cimarrón",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/5792641/pexels-photo-5792641.jpeg",
+        "photo_description": "Tococa shrub species with distinctive leaves in wetland understory",
+        "species_name": "Tococa sp.",
+        "common_name": "Tococa",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
     }
 ]
 
