@@ -35,6 +35,21 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    const elasticUrl = Deno.env.get('ELASTIC_CLOUD_URL');
+    const elasticApiKey = Deno.env.get('ELASTIC_API_KEY');
+
+    if (!elasticUrl || !elasticApiKey) {
+      return new Response(
+        JSON.stringify({
+          type: 'text',
+          content: 'The chat service is not fully configured yet. Please set up the ELASTIC_CLOUD_URL and ELASTIC_API_KEY environment variables in your Supabase project settings.',
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const { message, conversationId }: ChatRequest = await req.json();
 
     if (!message || typeof message !== 'string') {
@@ -64,7 +79,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const response = await queryElasticAgent(message, conversationId);
-    
+
     return new Response(
       JSON.stringify({
         type: 'text',
@@ -79,11 +94,10 @@ Deno.serve(async (req: Request) => {
     console.error('Chat error:', error);
     return new Response(
       JSON.stringify({
-        type: 'error',
-        content: error instanceof Error ? error.message : 'Unknown error occurred',
+        type: 'text',
+        content: `I apologize, but I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please make sure the Edge Function is properly configured with Elastic credentials.`,
       }),
       {
-        status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
