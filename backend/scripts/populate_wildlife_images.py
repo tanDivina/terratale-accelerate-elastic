@@ -375,6 +375,30 @@ SAMPLE_WILDLIFE_DATA = [
         "common_name": "Cyperus",
         "location": "San San Pond Sak Wetlands",
         "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/5792641/pexels-photo-5792641.jpeg",
+        "photo_description": "Icaco shrub with edible fruits along coastal wetland areas",
+        "species_name": "Chrysobalanus icaco",
+        "common_name": "Icaco",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/6775268/pexels-photo-6775268.jpeg",
+        "photo_description": "Neea shrub species found in wetland forest margins",
+        "species_name": "Neea sp.",
+        "common_name": "Neea",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
+    },
+    {
+        "photo_image_url": "https://images.pexels.com/photos/6894276/pexels-photo-6894276.jpeg",
+        "photo_description": "Cyperus grass species forming herbaceous wetland vegetation",
+        "species_name": "Cyperus sp.",
+        "common_name": "Cyperus",
+        "location": "San San Pond Sak Wetlands",
+        "conservation_status": "Native Plant"
     }
 ]
 
