@@ -9,10 +9,9 @@ class ElasticAgentClient:
     def __init__(self):
         self.base_url = settings.elastic_cloud_url.rstrip('/')
         self.api_key = settings.elastic_api_key
-        self.agent_id = settings.elastic_agent_id
+        self.inference_endpoint = ".rainbow-sprinkles-elastic"
         self.headers = {
             "Authorization": f"ApiKey {self.api_key}",
-            "kbn-xsrf": "true",
             "Content-Type": "application/json"
         }
 
@@ -21,34 +20,32 @@ class ElasticAgentClient:
         input_text: str,
         conversation_id: Optional[str] = None
     ) -> AsyncGenerator[Dict[str, Any], None]:
-        url = f"{self.base_url}/api/agent_builder/converse/async"
+        url = f"{self.base_url}/_inference/{self.inference_endpoint}"
 
         payload = {
-            "input": input_text,
-            "agent_id": self.agent_id
+            "input": input_text
         }
 
-        if conversation_id:
-            payload["conversation_id"] = conversation_id
-
         async with httpx.AsyncClient(timeout=120.0) as client:
-            async with client.stream(
-                "POST",
+            response = await client.post(
                 url,
                 headers=self.headers,
                 json=payload
-            ) as response:
-                response.raise_for_status()
+            )
+            response.raise_for_status()
+            result = response.json()
 
-                async for line in response.aiter_lines():
-                    if line.strip():
-                        if line.startswith("data: "):
-                            data_str = line[6:]
-                            try:
-                                data = json.loads(data_str)
-                                yield data
-                            except json.JSONDecodeError:
-                                continue
+            completion_text = result.get("completion", [{}])[0].get("result", "")
+
+            yield {
+                "type": "content",
+                "content": completion_text
+            }
+
+            yield {
+                "type": "complete",
+                "conversation_id": conversation_id
+            }
 
     async def search_images(
         self,
