@@ -15,6 +15,10 @@ class Settings(BaseSettings):
 
     wildlife_image_index: str = "wildlife-images"
 
+    supabase_url: Optional[str] = None
+    supabase_anon_key: Optional[str] = None
+    supabase_service_role_key: Optional[str] = None
+
     class Config:
         env_file = ".env"
         case_sensitive = False
