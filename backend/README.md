@@ -93,7 +93,20 @@ This syncs the 71 wildlife species from Supabase to Elasticsearch, creating a `w
 - 10 mammal species
 - 7 reptile species (including 3 endangered sea turtles)
 
-**Note**: For the Elastic hackathon, we're using Elasticsearch as the primary database. Post-hackathon, the system will switch to Supabase as the primary database with Elasticsearch for search only.
+#### 3. Sync Wildlife Images to Supabase (Optional - Post-hackathon preparation)
+```bash
+python scripts/sync_elastic_images_to_supabase.py
+```
+This backs up all 54 wildlife image records from your populate script to Supabase, including:
+- 22 plant species (mangroves, palms, wetland vegetation)
+- 12 bird species
+- 12 reptile/amphibian species
+- 8 mammal species
+
+**Database Strategy**:
+- **During Hackathon**: Using Elasticsearch as the primary database
+- **Post-Hackathon**: Will switch to Supabase as the primary database with Elasticsearch for search only
+- Both sync scripts ensure data is backed up in Supabase for seamless transition
 
 ## Running the Server
 

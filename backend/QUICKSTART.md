@@ -97,6 +97,40 @@ Summary:
 
 This creates a searchable database of San San Pond Sak species including endangered manatees, sea turtles, jaguars, and primates.
 
+#### C. Sync Wildlife Images to Supabase (Optional - Post-Hackathon Preparation)
+Run this to backup all 54 wildlife image records to Supabase:
+
+```bash
+python scripts/sync_elastic_images_to_supabase.py
+```
+
+You should see:
+```
+============================================================
+Wildlife Images Sync: Elasticsearch → Supabase
+============================================================
+
+[1/2] Syncing 54 images to Supabase...
+✓ Successfully synced 54 images to Supabase
+
+[2/2] Verifying sync...
+
+============================================================
+✓ Sync completed successfully!
+
+Summary:
+  - Images in source: 54
+  - Images in Supabase: 54
+  - By category:
+    • Birds: 12
+    • Mammals: 8
+    • Plants: 22
+    • Reptiles/Amphibians: 12
+============================================================
+```
+
+This backs up all wildlife photo records (including plants like mangroves, palms, and wetland vegetation) to Supabase for easy post-hackathon migration.
+
 ### 4. Start the Backend Server
 
 ```bash
