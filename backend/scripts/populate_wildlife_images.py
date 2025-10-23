@@ -19,6 +19,51 @@ SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip('/')
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 WIKIMEDIA_API_URL = "https://commons.wikimedia.org/w/api.php"
 
+# Spanish to English common name mapping for species
+ENGLISH_NAMES = {
+    "Águila pescadora": "Osprey",
+    "Amazilia colirrufo": "Rufous-tailed Hummingbird",
+    "Bolsero castaño": "Orchard Oriole",
+    "Carpintero lineado": "Lineated Woodpecker",
+    "Cigua palmera": "Palm Tanager",
+    "Colibrí": "Hummingbird",
+    "Garza grande": "Great Egret",
+    "Garza tricolor": "Tricolored Heron",
+    "Ibis verde": "Green Ibis",
+    "Loro frentirrojo": "Red-lored Parrot",
+    "Martín pescador verde": "Green Kingfisher",
+    "Momoto común": "Blue-crowned Motmot",
+    "Oropéndola cabecicastaña": "Chestnut-headed Oropendola",
+    "Tucán pico iris": "Keel-billed Toucan",
+    "Zopilote cabecinegro": "Black Vulture",
+    "Perezoso de tres dedos": "Three-toed Sloth",
+    "Perezoso de dos dedos": "Two-toed Sloth",
+    "Mono aullador": "Howler Monkey",
+    "Mono araña": "Spider Monkey",
+    "Mono capuchino": "White-faced Capuchin",
+    "Jaguar": "Jaguar",
+    "Ocelote": "Ocelot",
+    "Puma": "Puma",
+    "Ñeque": "Central American Agouti",
+    "Saíno": "Collared Peccary",
+    "Tepezcuintle": "Paca",
+    "Manatí antillano": "West Indian Manatee",
+    "Delfín nariz de botella": "Bottlenose Dolphin",
+    "Tortuga carey": "Hawksbill Sea Turtle",
+    "Tortuga verde": "Green Sea Turtle",
+    "Tortuga baula": "Leatherback Sea Turtle",
+    "Rana venenosa": "Poison Dart Frog",
+    "Boa constrictor": "Boa Constrictor",
+    "Caimán": "Spectacled Caiman",
+    "Iguana verde": "Green Iguana",
+    "Cocodrilo americano": "American Crocodile",
+    "Orey": "Orey",
+    "Cativo": "Cativo",
+    "Cerillo": "Cerillo",
+    "Sangrillo": "Sangrillo",
+    "Caoba": "Mahogany",
+}
+
 SAMPLE_WILDLIFE_DATA = [
     # BIRDS (30 species)
     {
@@ -621,6 +666,7 @@ async def create_index():
                 "photo_description": {"type": "text"},
                 "species_name": {"type": "text"},
                 "common_name": {"type": "text"},
+                "english_name": {"type": "text"},
                 "location": {"type": "text"},
                 "conservation_status": {"type": "keyword"}
             }
@@ -782,11 +828,13 @@ async def populate_wildlife_images():
         wikimedia_url = await search_wikimedia_image(scientific_name)
 
         if wikimedia_url:
+            english_name = ENGLISH_NAMES.get(common_name, common_name)
             doc = {
                 "photo_image_url": wikimedia_url,
-                "photo_description": f"{common_name} ({scientific_name}) - Image from Wikimedia Commons",
+                "photo_description": f"{common_name} / {english_name} ({scientific_name}) - Image from Wikimedia Commons",
                 "species_name": scientific_name,
                 "common_name": common_name,
+                "english_name": english_name,
                 "location": "San San Pond Sak Wetlands",
                 "conservation_status": conservation_status
             }
