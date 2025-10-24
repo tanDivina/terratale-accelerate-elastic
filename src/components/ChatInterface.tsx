@@ -137,6 +137,29 @@ export default function ChatInterface() {
         if (currentConversationId) {
           await saveMessage(currentConversationId, 'assistant', data.content);
         }
+      } else if (data.type === 'combined') {
+        const textMessageId = Date.now().toString();
+        const imageMessageId = (Date.now() + 1).toString();
+
+        setMessages(prev => [
+          ...prev,
+          {
+            id: textMessageId,
+            type: 'assistant',
+            content: data.text
+          },
+          {
+            id: imageMessageId,
+            type: 'images' as const,
+            content: 'Here are some images:',
+            images: data.images
+          }
+        ]);
+
+        if (currentConversationId) {
+          await saveMessage(currentConversationId, 'assistant', data.text);
+          await saveMessage(currentConversationId, 'images', 'Here are some images:', undefined, data.images);
+        }
       } else if (data.type === 'image_search_results') {
         const newMessage = {
           id: Date.now().toString(),

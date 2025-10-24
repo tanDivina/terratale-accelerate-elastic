@@ -65,6 +65,31 @@ Deno.serve(async (req: Request) => {
 
     const messageLower = message.toLowerCase();
     const shouldSearchImages = checkIfImageSearch(messageLower);
+    const wantsBothTextAndImages = shouldSearchImages && (
+      messageLower.includes('tell me') ||
+      messageLower.includes('explain') ||
+      messageLower.includes('about') ||
+      messageLower.includes('what are') ||
+      messageLower.includes('describe')
+    );
+
+    if (wantsBothTextAndImages && elasticUrl && elasticApiKey) {
+      const [images, textResponse] = await Promise.all([
+        searchWildlifeImages(messageLower),
+        queryGemini(message, conversationId)
+      ]);
+
+      return new Response(
+        JSON.stringify({
+          type: 'combined',
+          text: textResponse,
+          images: images,
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
     if (shouldSearchImages && elasticUrl && elasticApiKey) {
       const images = await searchWildlifeImages(messageLower);
