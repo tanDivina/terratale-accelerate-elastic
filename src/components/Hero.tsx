@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="bg-[#f5f3ed] py-20 px-6">
+    <section className="bg-[#8db9ca] py-20 px-6">
       <div className="max-w-5xl mx-auto text-center">
         <h1 className="text-6xl md:text-7xl lg:text-8xl text-stone-900 mb-6 leading-tight">
           <span className="italic font-normal">Discover</span> the Wetlands
