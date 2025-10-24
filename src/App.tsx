@@ -22,7 +22,7 @@ function App() {
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-6 mb-4">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
-                Chat with Mateo the Manatee
+                Meet Mateo the Manatee!
               </h2>
               <img
                 src="/ezgif.com-animated-gif-maker.gif"
