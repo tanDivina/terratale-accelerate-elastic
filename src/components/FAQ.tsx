@@ -88,7 +88,7 @@ The core innovation—combining conversational AI, intelligent search, and biodi
 
 • Transforms Data Interaction: We transform how people interact with biodiversity data by:
   - Making complex ecological information accessible through natural conversation
-  - Automatically surfacing visual evidence from 200+ species indexed in Elasticsearch
+  - Automatically surfacing visual evidence from 60+ species indexed in Elasticsearch
   - Maintaining conversation context to enable intuitive follow-up queries
   - Providing dedicated conservation status filters to explore threatened species
 
