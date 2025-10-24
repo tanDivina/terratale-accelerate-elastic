@@ -17,7 +17,7 @@ function App() {
       <Header />
       <Hero />
 
-      <section id="voice-chat" className="py-20 relative bg-[#f5f3ed]">
+      <section id="voice-chat" className="py-20 relative" style={{ backgroundColor: '#d4e5eb' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-6 mb-4">
@@ -27,8 +27,8 @@ function App() {
               <img
                 src="/ezgif.com-animated-gif-maker.gif"
                 alt="Mateo the Manatee"
-                className="w-24 h-24"
-                style={{ backgroundColor: '#8db9ca' }}
+                className="w-40 h-40"
+                style={{ backgroundColor: 'transparent' }}
               />
             </div>
             <p className="text-xl text-gray-900 mb-8">
