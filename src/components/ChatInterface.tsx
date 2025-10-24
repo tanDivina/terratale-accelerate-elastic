@@ -320,7 +320,7 @@ export default function ChatInterface() {
         />
       </div>
 
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-[#f5fffe]">
         <div className="flex gap-2">
           <button
             onClick={() => setShowHistory(!showHistory)}
@@ -403,7 +403,7 @@ export default function ChatInterface() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-[#f5fffe]">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -451,7 +451,7 @@ export default function ChatInterface() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="border-t border-gray-200 p-4 bg-white">
+      <div className="border-t border-gray-200 p-4 bg-[#f5fffe]">
             <div className="flex gap-3">
               <button
                 onClick={toggleRecording}
