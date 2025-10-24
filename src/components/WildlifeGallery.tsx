@@ -8,6 +8,7 @@ interface WildlifeImage {
   photo_description: string;
   species_name: string;
   common_name: string;
+  english_name?: string;
   location: string;
   conservation_status: string | null;
 }
@@ -148,7 +149,7 @@ export default function WildlifeGallery() {
                   )}
                 </div>
                 <h3 className="text-lg font-medium text-stone-900 mb-1">
-                  {image.common_name}
+                  {image.english_name || image.common_name}
                 </h3>
                 <p className="text-sm text-stone-500 italic">{image.species_name}</p>
               </div>

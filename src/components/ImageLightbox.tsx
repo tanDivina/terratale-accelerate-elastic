@@ -7,6 +7,7 @@ interface WildlifeImage {
   photo_description: string;
   species_name: string;
   common_name: string;
+  english_name?: string;
   location: string;
   conservation_status: string | null;
 }
@@ -63,12 +64,12 @@ export default function ImageLightbox({ images, currentIndex = 0, onClose, onNav
         >
           <img
             src={image.photo_image_url}
-            alt={image.common_name}
+            alt={image.english_name || image.common_name}
             className="max-w-full max-h-[75vh] object-contain rounded-lg"
           />
           <div className="mt-6 px-8 py-4 bg-stone-900 bg-opacity-90 rounded-lg max-w-2xl">
             <h3 className="text-xl font-semibold text-white text-center mb-2">
-              {image.common_name}
+              {image.english_name || image.common_name}
             </h3>
             <p className="text-stone-300 text-center italic mb-3">{image.species_name}</p>
             <p className="text-white text-center">{image.photo_description}</p>
