@@ -106,7 +106,7 @@ export default function WildlifeGallery() {
 
           {!searchTerm && images.length === 0 && !loading && (
             <p className="mt-4 text-stone-600 text-lg">
-              Spotted something you'd like to identify?
+              Spotted something you'd like to identify? Browse our library with over 60 species found in San San Pond Sak!
             </p>
           )}
           {searchTerm && !searching && (
