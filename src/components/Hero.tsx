@@ -7,10 +7,21 @@ export default function Hero() {
           <br />
           <span className="italic font-normal">of</span> Bocas del Toro
         </h1>
-        <p className="text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed mb-8">
           Explore the rich biodiversity and natural beauty of the San San Pond Sak Wetlands,
           home to countless species and vital ecosystems.
         </p>
+        <div className="max-w-4xl mx-auto mt-8">
+          <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+            <iframe
+              className="absolute top-0 left-0 w-full h-full rounded-lg shadow-2xl"
+              src="https://www.youtube.com/embed/VIDEO_ID"
+              title="San San Pond Sak Wetlands Video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
       </div>
     </section>
   );
