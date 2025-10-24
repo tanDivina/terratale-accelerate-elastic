@@ -139,16 +139,44 @@ async function searchWildlifeImages(query: string): Promise<any[]> {
 
   const searchUrl = `${elasticUrl.replace(/\/$/, '')}/${wildlifeIndex}/_search`;
 
-  const searchBody = {
-    query: {
-      multi_match: {
-        query: query,
-        fields: ['photo_description', 'species_name', 'common_name', 'english_name'],
-        fuzziness: 'AUTO',
+  const conservationStatuses = [
+    'critically endangered',
+    'endangered',
+    'vulnerable',
+    'near threatened',
+    'threatened',
+    'declining'
+  ];
+
+  let searchBody: any;
+
+  const queryLower = query.toLowerCase();
+  const hasConservationKeyword = conservationStatuses.some(status =>
+    queryLower.includes(status) && queryLower.includes('species')
+  );
+
+  if (hasConservationKeyword) {
+    const matchedStatus = conservationStatuses.find(status => queryLower.includes(status));
+    searchBody = {
+      query: {
+        match: {
+          conservation_status: matchedStatus
+        }
       },
-    },
-    size: 6,
-  };
+      size: 12,
+    };
+  } else {
+    searchBody = {
+      query: {
+        multi_match: {
+          query: query,
+          fields: ['photo_description', 'species_name', 'common_name', 'english_name', 'conservation_status'],
+          fuzziness: 'AUTO',
+        },
+      },
+      size: 6,
+    };
+  }
 
   const response = await fetch(searchUrl, {
     method: 'POST',

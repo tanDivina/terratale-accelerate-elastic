@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, History, Plus, X, Mic, MicOff } from 'lucide-react';
+import { Send, Loader2, History, Plus, X, Mic, MicOff, Shield } from 'lucide-react';
 import ImageLightbox from './ImageLightbox';
 import { createConversation, saveMessage, loadConversations, loadMessages, deleteConversation } from '../lib/conversationService';
 import type { Conversation } from '../lib/supabase';
@@ -336,6 +336,31 @@ export default function ChatInterface() {
             )}
           </div>
         )}
+
+      <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200">
+        <div className="flex items-center gap-2 mb-2">
+          <Shield className="w-4 h-4 text-emerald-700" />
+          <span className="text-sm font-medium text-emerald-900">Conservation Status</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: 'Critically Endangered', value: 'critically endangered', color: 'bg-red-600 hover:bg-red-700' },
+            { label: 'Endangered', value: 'endangered', color: 'bg-orange-600 hover:bg-orange-700' },
+            { label: 'Vulnerable', value: 'vulnerable', color: 'bg-amber-600 hover:bg-amber-700' },
+            { label: 'Near Threatened', value: 'Near Threatened', color: 'bg-yellow-600 hover:bg-yellow-700' },
+            { label: 'Threatened', value: 'threatened', color: 'bg-rose-600 hover:bg-rose-700' },
+            { label: 'Declining', value: 'declining', color: 'bg-purple-600 hover:bg-purple-700' }
+          ].map((status) => (
+            <button
+              key={status.value}
+              onClick={() => setInput(`show me ${status.value} species`)}
+              className={`${status.color} text-white text-xs px-3 py-1.5 rounded-full transition-all transform hover:scale-105 shadow-sm`}
+            >
+              {status.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.map((message) => (
