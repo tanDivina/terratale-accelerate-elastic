@@ -232,7 +232,22 @@ async function getContextualSearchQuery(message: string, conversationId?: string
 
     const messages = await messagesResponse.json();
 
-    const animals = ['manatee', 'jaguar', 'turtle', 'sloth', 'monkey', 'bird', 'toucan', 'parrot', 'heron', 'egret', 'caiman', 'crocodile', 'frog', 'snake', 'bat', 'dolphin'];
+    // First check for specific species mentions (look for capitalized species names)
+    for (const msg of messages) {
+      const content = msg.content || '';
+
+      // Look for patterns like "Boat-billed Heron" or "Great Blue Heron"
+      const speciesPattern = /\b([A-Z][a-z]+(?:-[A-Z][a-z]+)?(?:\s+[A-Z][a-z]+)*)\s+(Heron|Egret|Toucan|Parrot|Monkey|Sloth|Jaguar|Manatee|Turtle|Caiman|Crocodile|Frog|Snake|Bat|Dolphin|Kingfisher|Peccary)\b/g;
+      const matches = content.match(speciesPattern);
+
+      if (matches && matches.length > 0) {
+        // Return the most recent specific species mention
+        return matches[matches.length - 1];
+      }
+    }
+
+    // Fall back to generic animal keywords
+    const animals = ['boat-billed heron', 'manatee', 'jaguar', 'turtle', 'sloth', 'monkey', 'bird', 'toucan', 'parrot', 'heron', 'egret', 'caiman', 'crocodile', 'frog', 'snake', 'bat', 'dolphin', 'kingfisher'];
 
     for (const msg of messages) {
       const content = (msg.content || '').toLowerCase();
