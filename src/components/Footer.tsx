@@ -19,9 +19,9 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-medium mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#explore" className="hover:text-white transition-colors">Explore</a></li>
-              <li><a href="#wildlife" className="hover:text-white transition-colors">Wildlife</a></li>
-              <li><a href="#about" className="hover:text-white transition-colors">About Us</a></li>
+              <li><a href="#chat" className="hover:text-white transition-colors">Text Chat</a></li>
+              <li><a href="#voice" className="hover:text-white transition-colors">Voice Chat</a></li>
+              <li><a href="#wildlife" className="hover:text-white transition-colors">Experience the Biodiversity</a></li>
             </ul>
           </div>
 
