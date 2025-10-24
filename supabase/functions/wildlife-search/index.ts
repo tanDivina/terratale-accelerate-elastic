@@ -73,17 +73,37 @@ Deno.serve(async (req: Request) => {
 
     const allImages = result.hits.hits.map((hit: any) => ({
       id: hit._id,
+      score: hit._score || 0,
       ...hit._source
     }));
 
-    const seenSpecies = new Set<string>();
-    const images = allImages.filter((image: any) => {
-      if (seenSpecies.has(image.species_name)) {
-        return false;
+    const speciesMap = new Map<string, any>();
+
+    for (const image of allImages) {
+      const existing = speciesMap.get(image.species_name);
+
+      if (!existing) {
+        speciesMap.set(image.species_name, image);
+      } else {
+        const currentDesc = (image.photo_description || '').toLowerCase();
+        const existingDesc = (existing.photo_description || '').toLowerCase();
+        const currentUrl = (image.photo_image_url || '').toLowerCase();
+        const existingUrl = (existing.photo_image_url || '').toLowerCase();
+
+        const isCemetery = currentUrl.includes('cemetery') || currentDesc.includes('cemetery') ||
+                          currentDesc.includes('grave') || currentDesc.includes('tomb');
+        const existingIsCemetery = existingUrl.includes('cemetery') || existingDesc.includes('cemetery') ||
+                                   existingDesc.includes('grave') || existingDesc.includes('tomb');
+
+        if (existingIsCemetery && !isCemetery) {
+          speciesMap.set(image.species_name, image);
+        } else if (!existingIsCemetery && !isCemetery && image.score > existing.score) {
+          speciesMap.set(image.species_name, image);
+        }
       }
-      seenSpecies.add(image.species_name);
-      return true;
-    });
+    }
+
+    const images = Array.from(speciesMap.values());
 
     return new Response(
       JSON.stringify({ images, total: images.length }),

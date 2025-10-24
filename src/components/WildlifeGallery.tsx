@@ -21,7 +21,7 @@ export default function WildlifeGallery() {
   const [searching, setSearching] = useState(false);
 
   useEffect(() => {
-    fetchImages('');
+    // Don't load images initially - only when user searches
   }, []);
 
   useEffect(() => {
@@ -101,6 +101,11 @@ export default function WildlifeGallery() {
             )}
           </div>
 
+          {!searchTerm && images.length === 0 && !loading && (
+            <p className="mt-4 text-stone-600 text-lg">
+              Spotted something you'd like to identify?
+            </p>
+          )}
           {searchTerm && !searching && (
             <p className="mt-4 text-stone-600">
               Found {images.length} {images.length === 1 ? 'result' : 'results'}
@@ -111,15 +116,15 @@ export default function WildlifeGallery() {
         {loading || searching ? (
           <div className="text-center py-12">
             <div className="inline-block w-8 h-8 border-4 border-stone-300 border-t-stone-600 rounded-full animate-spin"></div>
-            <p className="mt-4 text-stone-600">{searching ? 'Searching...' : 'Loading wildlife gallery...'}</p>
+            <p className="mt-4 text-stone-600">Searching...</p>
           </div>
-        ) : images.length === 0 ? (
+        ) : images.length === 0 && searchTerm ? (
           <div className="text-center py-12">
             <p className="text-stone-600 text-lg">
-              {searchTerm ? 'No species found matching your search.' : 'No wildlife images available.'}
+              No species found matching your search.
             </p>
           </div>
-        ) : (
+        ) : images.length > 0 && (
           <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
             {images.map((image) => (
               <div
