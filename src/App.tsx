@@ -1,4 +1,4 @@
-import { useState } from 'react';
+ import { useState } from 'react';
 import { MessageSquare, Mic } from 'lucide-react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -36,7 +36,7 @@ function App() {
               />
             </div>
             <p className="text-xl text-gray-900 mb-8">
-              Have a voice conversation about the San San Pond Sak Wetlands
+              Have a LIVE voice chat with Mateo about the San San Pond Sak Wetlands
             </p>
           </div>
 
