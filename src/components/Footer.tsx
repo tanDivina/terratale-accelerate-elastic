@@ -31,7 +31,7 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
-                <span>info@sansanpondsak.org</span>
+                <span>https://www.linkedin.com/in/dorien-van-den-abbeele-136170b/</span>
               </li>
               <li className="flex items-center gap-2">
                 <Globe className="w-4 h-4" />
