@@ -1,4 +1,4 @@
-import { Leaf, Mail, Globe } from 'lucide-react';
+ import { Leaf, Mail, Globe } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -21,7 +21,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><a href="#chat" className="hover:text-white transition-colors">Text Chat</a></li>
               <li><a href="#voice" className="hover:text-white transition-colors">Voice Chat</a></li>
-              <li><a href="#wildlife" className="hover:text-white transition-colors">Experience the Biodiversity</a></li>
+              <li><a href="#wildlife" className="hover:text-white transition-colors">Biodiversity Library</a></li>
             </ul>
           </div>
 
