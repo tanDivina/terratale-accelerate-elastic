@@ -27,11 +27,9 @@ function App() {
               <img
                 src="/ezgif.com-crop.gif"
                 alt="Mateo the Manatee"
-                className="w-80 h-80 animate-bounce"
+                className="w-80 h-80 gentle-bounce"
                 style={{
-                  backgroundColor: 'transparent',
-                  animationDuration: '5s',
-                  animationTimingFunction: 'ease-in-out'
+                  backgroundColor: 'transparent'
                 }}
               />
             </div>

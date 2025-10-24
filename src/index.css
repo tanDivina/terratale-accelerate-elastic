@@ -26,3 +26,16 @@
 .manatee-float {
   animation: manatee-float 4s ease-in-out infinite;
 }
+
+@keyframes gentleBounce {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.gentle-bounce {
+  animation: gentleBounce 5s ease-in-out infinite;
+}
