@@ -11,8 +11,7 @@ export default function Footer() {
               <span className="text-lg font-light tracking-wide">TerraTale</span>
             </div>
             <p className="text-sm text-stone-400 leading-relaxed">
-              Protecting and preserving the natural heritage of Bocas del Toro's wetlands
-              for future generations.
+              Conversational eco-guide for Bocas del Toro's wetlands.
             </p>
           </div>
 
