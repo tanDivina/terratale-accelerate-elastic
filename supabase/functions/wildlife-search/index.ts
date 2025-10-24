@@ -40,11 +40,7 @@ Deno.serve(async (req: Request) => {
         query: {
           match_all: {}
         },
-        size: size,
-        sort: [{ "common_name.keyword": "asc" }],
-        collapse: {
-          field: "species_name.keyword"
-        }
+        size: size
       };
     } else {
       elasticQuery = {
@@ -55,10 +51,7 @@ Deno.serve(async (req: Request) => {
             fuzziness: "AUTO"
           }
         },
-        size: size,
-        collapse: {
-          field: "species_name.keyword"
-        }
+        size: size
       };
     }
 
@@ -77,14 +70,23 @@ Deno.serve(async (req: Request) => {
     }
 
     const result = await response.json();
-    
-    const images = result.hits.hits.map((hit: any) => ({
+
+    const allImages = result.hits.hits.map((hit: any) => ({
       id: hit._id,
       ...hit._source
     }));
 
+    const seenSpecies = new Set<string>();
+    const images = allImages.filter((image: any) => {
+      if (seenSpecies.has(image.species_name)) {
+        return false;
+      }
+      seenSpecies.add(image.species_name);
+      return true;
+    });
+
     return new Response(
-      JSON.stringify({ images, total: result.hits.total.value }),
+      JSON.stringify({ images, total: images.length }),
       {
         headers: {
           ...corsHeaders,
