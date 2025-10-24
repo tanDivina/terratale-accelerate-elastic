@@ -27,7 +27,7 @@ The architecture is designed for scalability and maintainability, with clear sep
     question: "Is the user experience and design of TerraTale well thought out?",
     answer: `Yes, the user experience is central to TerraTale's design. We've created an intuitive interface with three core features that work seamlessly together:
 
-• Voice Chat with Mateo: A real-time voice conversation experience using Gemini LIVE API, enabling hands-free exploration perfect for visitors in the field.
+• Voice Chat with Mateo: A real-time voice conversation experience using Gemini LIVE API (built in Google AI Studio and deployed with Google Cloud Run), enabling hands-free exploration perfect for visitors in the field.
 • Text Chat: A conversational AI assistant that answers questions about the wetlands and can search and display wildlife images from our biodiversity library.
 • Biodiversity Library: A searchable gallery featuring over sixty of wildlife & plant species from the San San Pond Sak Wetlands, with detailed information about each species and their conservation status.
 
