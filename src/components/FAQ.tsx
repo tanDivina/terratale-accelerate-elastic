@@ -29,7 +29,7 @@ The architecture is designed for scalability and maintainability, with clear sep
 
 • Voice Chat with Mateo: A real-time voice conversation experience using Gemini LIVE API, enabling hands-free exploration perfect for visitors in the field.
 • Text Chat: A conversational AI assistant that answers questions about the wetlands and can search and display wildlife images from our biodiversity library.
-• Biodiversity Library: A searchable gallery featuring hundreds of wildlife species from the San San Pond Sak Wetlands, with detailed information about each species and their conservation status.
+• Biodiversity Library: A searchable gallery featuring over sixty of wildlife & plant species from the San San Pond Sak Wetlands, with detailed information about each species and their conservation status.
 
 Key UX innovations include:
 
