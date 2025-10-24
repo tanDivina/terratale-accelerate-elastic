@@ -57,6 +57,7 @@ async def create_elasticsearch_index():
                 "species_name": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
                 "common_name": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
                 "english_name": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
+                "natural_description": {"type": "text"},
                 "location": {"type": "text"},
                 "conservation_status": {"type": "keyword"},
                 "created_at": {"type": "date"},

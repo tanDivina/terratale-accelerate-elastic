@@ -47,7 +47,7 @@ Deno.serve(async (req: Request) => {
         query: {
           multi_match: {
             query: searchQuery,
-            fields: ["common_name^2", "english_name^2", "species_name^2", "photo_description", "conservation_status", "location"],
+            fields: ["common_name^2", "english_name^2", "natural_description^3", "species_name^2", "photo_description", "conservation_status", "location"],
             fuzziness: "AUTO",
             operator: "or"
           }
