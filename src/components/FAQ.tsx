@@ -9,29 +9,34 @@ interface FAQItem {
 const faqData: FAQItem[] = [
   {
     question: "How does TerraTale demonstrate quality software development in its technological implementation, especially with Google Cloud and partner services?",
-    answer: `TerraTale showcases robust and modular software development practices. The backend is built with Python and FastAPI, providing a high-performance, asynchronous API. We leverage Google Cloud's Generative AI (Gemini API) extensively for:
+    answer: `TerraTale showcases robust and modular software development practices built on modern web technologies. The frontend is built with React and TypeScript using Vite, while the backend leverages Supabase Edge Functions for serverless architecture. We leverage Google Cloud's Generative AI (Gemini API) extensively for:
 
-• Natural Language Understanding: Processing user queries for intent recognition (question vs. image description).
-• Text Generation: Crafting detailed responses from Papito, the park ranger.
-• Speech Synthesis: Generating natural-sounding audio responses from Mateo, the playful manatee, utilizing the new Gemini LIVE API for real-time, low-latency audio.
-• Embeddings: Creating vector representations of text for our Question Answering system.
+• Natural Language Understanding: Processing user queries to understand intent and context.
+• Text Generation: Crafting detailed, conversational responses about the San San Pond Sak Wetlands.
+• Real-time Voice Interaction: Utilizing the Gemini LIVE API for natural voice conversations with real-time, low-latency audio streaming.
 
 We integrate Elasticsearch as a powerful partner service for:
 
-• Vector Search: Storing and retrieving contextual information for the QA system, and performing semantic image searches.
-• Data Storage: Managing our knowledge base and image metadata.
+• Full-Text Search: Performing sophisticated wildlife image searches with fuzzy matching and multi-field queries.
+• Data Indexing: Managing our biodiversity library with rich metadata including species names, conservation status, and natural descriptions.
+• Query Optimization: Using field boosting and scoring to surface the most relevant wildlife images.
 
-The architecture is designed for scalability and maintainability, with clear separation of concerns (AI core, QA system, Image Search). Crucially, we implement secure credential handling using Google Cloud service accounts and environment variables, ensuring sensitive information is never exposed in the codebase.`
+The architecture is designed for scalability and maintainability, with clear separation between chat functionality, voice interaction, and image search. We implement secure credential handling using environment variables in Supabase, ensuring sensitive information is never exposed in the codebase.`
   },
   {
     question: "Is the user experience and design of TerraTale well thought out?",
-    answer: `Yes, the user experience is central to TerraTale's design. We've created an intuitive, conversational interface that mimics natural interaction. Key design elements include:
+    answer: `Yes, the user experience is central to TerraTale's design. We've created an intuitive interface with three core features that work seamlessly together:
 
-• Dual Personas (Mateo & Papito): Providing distinct, engaging voices for different types of information (playful audio summary vs. detailed text explanation).
-• Voice Interaction: Enabling hands-free engagement, crucial for visitors exploring a park.
-• Integrated Image Search & Identification (Vision): Seamlessly transitioning from a textual description to visual identification, enhancing understanding and engagement. For example, a user could describe: "I spotted a small, playful animal swimming, dark brown, looks like some type of otter." The system would then analyze images in its database, identify potential matches, and respond: "Ah, based on your description, I think you saw a Neotropical River Otter! Here's a photo."
-• Context-Aware Responses: The system intelligently determines user intent, providing relevant information or visual aids without explicit commands.
-• Pronunciation Guidance: Ensuring correct pronunciation of local terms like "tulivieja" for an authentic and respectful experience.`
+• Voice Chat with Mateo: A real-time voice conversation experience using Gemini LIVE API, enabling hands-free exploration perfect for visitors in the field.
+• Text Chat: A conversational AI assistant that answers questions about the wetlands and can search and display wildlife images from our biodiversity library.
+• Biodiversity Library: A searchable gallery featuring hundreds of wildlife species from the San San Pond Sak Wetlands, with detailed information about each species and their conservation status.
+
+Key UX innovations include:
+
+• Context-Aware Image Search: The chat system intelligently detects when users want to see photos and searches the Elasticsearch-powered biodiversity library.
+• Conservation Status Filters: Quick-access buttons to explore species by their conservation status (Critically Endangered, Endangered, Vulnerable, etc.).
+• Conversation History: Text chat maintains persistent conversation history using Supabase, allowing users to continue previous discussions.
+• Image Lightbox: Full-screen image viewing with detailed species descriptions and navigation between related wildlife photos.`
   },
   {
     question: "What is the potential impact of TerraTale on its target communities?",
@@ -47,10 +52,12 @@ The architecture is designed for scalability and maintainability, with clear sep
     question: "What sets TerraTale apart from traditional information systems?",
     answer: `TerraTale offers an innovative approach that distinguishes it from conventional solutions:
 
-• Multi-modal Interaction: Seamlessly blending conversational AI (text and speech) with advanced image search capabilities.
-• Contextual AI for Specific Environments: Moving beyond generic chatbots to create a specialized, knowledgeable agent for a specific ecological site.
-• Persona-Driven Engagement: The use of distinct, engaging personas (manatee and park ranger) adds a layer of personality and memorability not typically found in informational tools.
-• Bridging Digital and Natural Worlds: Using cutting-edge AI to enhance real-world experiences in natural environments.`
+• Real-time Voice AI: Utilizing Gemini LIVE API for natural, low-latency voice conversations that feel authentic and engaging.
+• Intelligent Search Integration: Seamlessly blending conversational AI with Elasticsearch-powered biodiversity search, automatically detecting user intent to display relevant wildlife images.
+• Contextual Understanding: The chat system maintains conversation context through Supabase, enabling follow-up questions like "show me photos" to reference previously discussed species.
+• Conservation-Focused Design: Built specifically to highlight endangered and threatened species, with dedicated filters for conservation status.
+• Comprehensive Biodiversity Library: Leveraging Wikimedia Commons data, featuring hundreds of species with rich metadata including scientific names, common names, and natural descriptions.
+• Modern Serverless Architecture: Built on Supabase Edge Functions for scalability and reliability, with React frontend for responsive user experience.`
   },
   {
     question: "How can TerraTale's concept be adapted for other sectors and applications?",
@@ -64,20 +71,28 @@ The architecture is designed for scalability and maintainability, with clear sep
 • Agriculture & Farming: Assist farmers in identifying crop diseases, pests, or plant species through visual recognition combined with expert agricultural knowledge.
 • Tourism & Hospitality: Extend to any tourist destination, providing multilingual support, local insights, and interactive exploration of attractions.
 
-The core innovation—combining conversational AI, vector search, image recognition, and persona-driven interaction—creates a flexible framework that can be customized for any domain requiring accessible, engaging information delivery.`
+The core innovation—combining conversational AI, intelligent search, and biodiversity data—creates a flexible framework that can be customized for any domain requiring accessible, engaging information delivery.`
   },
   {
     question: "How does TerraTale address the Elastic Challenge: \"Build the Future of AI-Powered Search using Elastic's hybrid search capabilities and seamless integration with Google Cloud's generative AI tools to build a conversational and/or agent-based solution that transforms how people interact with data.\"?",
-    answer: `TerraTale is a direct answer to the Elastic Challenge:
+    answer: `TerraTale directly addresses the Elastic Challenge through:
 
-• AI-Powered Search: We utilize Elasticsearch's vector search capabilities for both our text-based Question Answering system and our innovative image search. This allows for semantic understanding beyond keywords.
-• Hybrid Search: While currently focused on vector search, the architecture is ready for hybrid search, combining vector and keyword search for even more precise results.
-• Seamless Google Cloud Integration: We deeply integrate Google Cloud's Gemini API for:
-  - Generative AI: Powering conversational responses and summaries.
-  - Embeddings: Generating vector representations for both text and images.
-  - Speech-to-Text/Text-to-Speech: Enabling natural voice interaction.
-• Conversational & Agent-Based Solution: TerraTale is a fully conversational agent, with distinct personas (Mateo and Papito) guiding the user experience.
-• Transforms Interaction with Data: It transforms how people interact with complex environmental data by making it accessible, interactive, and visually engaging, moving beyond traditional static information sources. It allows users to "talk" to the park's knowledge base and "show" what they've seen.`
+• AI-Powered Search with Elasticsearch: We leverage Elasticsearch's sophisticated full-text search capabilities for our biodiversity library, using multi_match queries with field boosting, fuzzy matching (fuzziness: "AUTO"), and custom scoring to surface the most relevant wildlife images. The search intelligently queries across multiple fields (species names, common names, natural descriptions, conservation status) to deliver accurate results.
+
+• Seamless Google Cloud Integration: We deeply integrate Google Cloud's Gemini API throughout the application:
+  - Conversational AI: Gemini 2.5 Flash powers the text chat, providing detailed responses about the San San Pond Sak Wetlands with context awareness through conversation history.
+  - Real-time Voice: Gemini LIVE API enables natural voice conversations with extremely low latency for in-field use.
+  - Intent Recognition: The system intelligently determines when users want images versus text responses, automatically triggering Elasticsearch searches.
+
+• Conversational & Agent-Based Solution: TerraTale is a fully conversational agent that combines natural language understanding with search. Users can ask questions like "tell me about endangered species" and the system will both provide a detailed response AND automatically search and display relevant images from the biodiversity library.
+
+• Transforms Data Interaction: We transform how people interact with biodiversity data by:
+  - Making complex ecological information accessible through natural conversation
+  - Automatically surfacing visual evidence from 200+ species indexed in Elasticsearch
+  - Maintaining conversation context to enable intuitive follow-up queries
+  - Providing dedicated conservation status filters to explore threatened species
+
+The result is an interactive experience where AI-powered search and generative AI work together seamlessly, allowing visitors to discover and learn about wetland wildlife through both conversation and visual exploration.`
   }
 ];
 
