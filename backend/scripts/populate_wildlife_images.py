@@ -242,7 +242,19 @@ async def populate_wildlife_images():
     print("=" * 70)
     print(f"Target index: {WILDLIFE_IMAGE_INDEX}")
     print(f"Elastic URL: {ELASTIC_CLOUD_URL}")
-    print(f"Supabase URL: {SUPABASE_URL}\n")
+    print(f"Supabase URL: {SUPABASE_URL}")
+
+    # Check required credentials
+    if not SUPABASE_SERVICE_ROLE_KEY:
+        print("\n✗ ERROR: SUPABASE_SERVICE_ROLE_KEY not found in environment!")
+        print("Please set it in your .env file")
+        return
+    if not ELASTIC_API_KEY:
+        print("\n✗ ERROR: ELASTIC_API_KEY not found in environment!")
+        print("Please set it in your .env file")
+        return
+
+    print()
 
     await create_index()
 
