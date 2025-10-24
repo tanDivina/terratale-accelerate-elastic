@@ -199,10 +199,11 @@ function checkIfImageSearch(message: string): boolean {
 
 async function getContextualSearchQuery(message: string, conversationId?: string): Promise<string> {
   const vagueQuestions = [
-    'what do they look like', 'show me', 'pictures', 'images', 'photos', 'what are they',
-    'do you have photos', 'do you have pictures', 'any photos', 'any pictures', 'got photos'
+    'what do they look like', 'show me', 'picture', 'image', 'photo', 'what are they',
+    'do you have', 'any photos', 'any pictures', 'got photos', 'that bird', 'that animal',
+    'of it', 'of that', 'of them'
   ];
-  const isVague = vagueQuestions.some(q => message.includes(q)) && message.split(' ').length < 8;
+  const isVague = vagueQuestions.some(q => message.includes(q)) && message.split(' ').length < 15;
 
   if (!isVague || !conversationId) {
     return message;
@@ -237,13 +238,17 @@ async function getContextualSearchQuery(message: string, conversationId?: string
       const content = msg.content || '';
 
       // Look for patterns like "Boat-billed Heron" or "Great Blue Heron"
-      // This pattern handles names with hyphens and multiple words before the animal type
-      const speciesPattern = /([A-Z][a-z]+(?:-[a-z]+)?(?:\s+[A-Z][a-z]+)*)\s+(Heron|Egret|Toucan|Parrot|Monkey|Sloth|Jaguar|Manatee|Turtle|Caiman|Crocodile|Frog|Snake|Bat|Dolphin|Kingfisher|Peccary|Macaw|Anteater|Agouti|Paca|Opossum|Tamandua)\b/gi;
+      // Match one or more capitalized words (potentially with hyphens) followed by an animal type
+      const speciesPattern = /\b([A-Z][a-z]+(?:-[a-z]+)?(?:\s+[A-Z][a-z]+)*)\s+(Heron|Egret|Toucan|Parrot|Monkey|Sloth|Jaguar|Manatee|Turtle|Caiman|Crocodile|Frog|Snake|Bat|Dolphin|Kingfisher|Peccary|Macaw|Anteater|Agouti|Paca|Opossum|Tamandua)\b/g;
       const matches = content.match(speciesPattern);
 
+      console.log('Checking message:', content.substring(0, 100));
+      console.log('Matches found:', matches);
+
       if (matches && matches.length > 0) {
-        // Return the most recent specific species mention
-        return matches[matches.length - 1];
+        const lastMatch = matches[matches.length - 1];
+        console.log('Using species:', lastMatch);
+        return lastMatch;
       }
     }
 
