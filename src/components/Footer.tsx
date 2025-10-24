@@ -20,7 +20,7 @@ export default function Footer() {
             <h3 className="text-white font-medium mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li><a href="#chat" className="hover:text-white transition-colors">Text Chat</a></li>
-              <li><a href="#voice" className="hover:text-white transition-colors">Voice Chat</a></li>
+              <li><a href="#voice-chat" className="hover:text-white transition-colors">Voice Chat</a></li>
               <li><a href="#wildlife" className="hover:text-white transition-colors">Biodiversity Library</a></li>
             </ul>
           </div>
