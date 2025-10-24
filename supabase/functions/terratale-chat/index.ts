@@ -77,8 +77,9 @@ Deno.serve(async (req: Request) => {
     );
 
     if (wantsBothTextAndImages && elasticUrl && elasticApiKey) {
+      const searchQuery = await getContextualSearchQuery(messageLower, conversationId);
       const [images, textResponse] = await Promise.all([
-        searchWildlifeImages(messageLower),
+        searchWildlifeImages(searchQuery),
         queryGemini(message, conversationId)
       ]);
 
@@ -95,7 +96,8 @@ Deno.serve(async (req: Request) => {
     }
 
     if (shouldSearchImages && elasticUrl && elasticApiKey) {
-      const images = await searchWildlifeImages(messageLower);
+      const searchQuery = await getContextualSearchQuery(messageLower, conversationId);
+      const images = await searchWildlifeImages(searchQuery);
       return new Response(
         JSON.stringify({
           type: 'image_search_results',
@@ -154,6 +156,55 @@ function checkIfImageSearch(message: string): boolean {
   }
 
   return false;
+}
+
+async function getContextualSearchQuery(message: string, conversationId?: string): Promise<string> {
+  const vagueQuestions = ['what do they look like', 'show me', 'pictures', 'images', 'photos', 'what are they'];
+  const isVague = vagueQuestions.some(q => message.includes(q)) && message.split(' ').length < 6;
+
+  if (!isVague || !conversationId) {
+    return message;
+  }
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+  if (!supabaseUrl || !supabaseKey) {
+    return message;
+  }
+
+  try {
+    const messagesResponse = await fetch(
+      `${supabaseUrl}/rest/v1/messages?conversation_id=eq.${conversationId}&order=created_at.desc&limit=5`,
+      {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+        }
+      }
+    );
+
+    if (!messagesResponse.ok) {
+      return message;
+    }
+
+    const messages = await messagesResponse.json();
+
+    const animals = ['manatee', 'jaguar', 'turtle', 'sloth', 'monkey', 'bird', 'toucan', 'parrot', 'heron', 'egret', 'caiman', 'crocodile', 'frog', 'snake', 'bat', 'dolphin'];
+
+    for (const msg of messages) {
+      const content = (msg.content || '').toLowerCase();
+      for (const animal of animals) {
+        if (content.includes(animal)) {
+          return animal;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error getting contextual search:', error);
+  }
+
+  return message;
 }
 
 async function searchWildlifeImages(query: string): Promise<any[]> {
@@ -307,10 +358,41 @@ async function queryGemini(
 
   const systemPrompt = `You are TerraTale AI, a knowledgeable guide for the San San Pond Sak Wetlands in Bocas del Toro, Panama.\n\nYou help visitors:\n- Learn about the wetlands' diverse wildlife including jaguars, manatees, sea turtles, and hundreds of bird species\n- Understand the importance of this Ramsar-designated protected area\n- Explore the unique ecosystem including mangroves, peat swamps, and coastal forests\n- Discover conservation efforts and sustainable tourism practices\n\nProvide engaging, educational responses that inspire appreciation for this natural treasure. Keep responses concise and conversational.`;
 
+  let conversationHistory = '';
+
+  if (conversationId) {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (supabaseUrl && supabaseKey) {
+      try {
+        const messagesResponse = await fetch(
+          `${supabaseUrl}/rest/v1/messages?conversation_id=eq.${conversationId}&order=created_at.asc&limit=10`,
+          {
+            headers: {
+              'apikey': supabaseKey,
+              'Authorization': `Bearer ${supabaseKey}`,
+            }
+          }
+        );
+
+        if (messagesResponse.ok) {
+          const messages = await messagesResponse.json();
+          if (messages && messages.length > 0) {
+            conversationHistory = '\n\nPrevious conversation:\n' +
+              messages.map((msg: any) => `${msg.type === 'user' ? 'User' : 'Assistant'}: ${msg.content}`).join('\n');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching conversation history:', error);
+      }
+    }
+  }
+
   const payload = {
     contents: [{
       parts: [{
-        text: `${systemPrompt}\n\nUser question: ${input}`
+        text: `${systemPrompt}${conversationHistory}\n\nUser question: ${input}`
       }]
     }]
   };
