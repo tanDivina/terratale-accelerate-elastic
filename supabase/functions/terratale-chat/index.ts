@@ -181,13 +181,13 @@ async function queryGemini(
   conversationId?: string
 ): Promise<string> {
   const geminiApiKey = Deno.env.get('GOOGLE_API_KEY');
-  const geminiModel = Deno.env.get('GEMINI_MODEL') || 'gemini-2.0-flash';
+  const model = 'gemini-2.5-flash';
 
   if (!geminiApiKey) {
     throw new Error('Gemini API key not configured');
   }
 
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiApiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${geminiApiKey}`;
 
   const systemPrompt = `You are TerraTale AI, a knowledgeable guide for the San San Pond Sak Wetlands in Bocas del Toro, Panama.\n\nYou help visitors:\n- Learn about the wetlands' diverse wildlife including jaguars, manatees, sea turtles, and hundreds of bird species\n- Understand the importance of this Ramsar-designated protected area\n- Explore the unique ecosystem including mangroves, peat swamps, and coastal forests\n- Discover conservation efforts and sustainable tourism practices\n\nProvide engaging, educational responses that inspire appreciation for this natural treasure. Keep responses concise and conversational.`;
 
@@ -196,16 +196,10 @@ async function queryGemini(
       parts: [{
         text: `${systemPrompt}\n\nUser question: ${input}`
       }]
-    }],
-    generationConfig: {
-      temperature: 0.7,
-      topK: 40,
-      topP: 0.95,
-      maxOutputTokens: 1024,
-    }
+    }]
   };
 
-  const response = await fetch(geminiUrl, {
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
