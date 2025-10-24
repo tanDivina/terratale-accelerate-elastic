@@ -17,6 +17,7 @@ ELASTIC_API_KEY = os.getenv("ELASTIC_API_KEY", "")
 WILDLIFE_IMAGE_INDEX = os.getenv("WILDLIFE_IMAGE_INDEX", "wildlife-images")
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip('/')
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 WIKIMEDIA_API_URL = "https://commons.wikimedia.org/w/api.php"
 
 # Spanish to English common name mapping for species
@@ -63,6 +64,20 @@ ENGLISH_NAMES = {
     "Sangrillo": "Sangrillo",
     "Caoba": "Mahogany",
 }
+
+GENERIC_IMAGE_URLS = [
+    "https://images.pexels.com/photos/2317942/pexels-photo-2317942.jpeg",
+    "https://images.pexels.com/photos/1661179/pexels-photo-1661179.jpeg",
+    "https://images.pexels.com/photos/2317767/pexels-photo-2317767.jpeg",
+    "https://images.pexels.com/photos/4666748/pexels-photo-4666748.jpeg",
+    "https://images.pexels.com/photos/5476960/pexels-photo-5476960.jpeg",
+    "https://images.pexels.com/photos/8083690/pexels-photo-8083690.jpeg",
+    "https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg",
+    "https://images.pexels.com/photos/2252618/pexels-photo-2252618.jpeg",
+    "https://images.pexels.com/photos/6775268/pexels-photo-6775268.jpeg",
+    "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg",
+    "https://images.pexels.com/photos/3493777/pexels-photo-3493777.jpeg",
+]
 
 SAMPLE_WILDLIFE_DATA = [
     # BIRDS (30 species)
@@ -686,8 +701,31 @@ async def create_index():
             print(f"✗ Error creating index: {e}")
 
 
+async def save_to_supabase(doc: Dict) -> bool:
+    """Save document to Supabase wildlife_images table"""
+    url = f"{SUPABASE_URL}/rest/v1/wildlife_images"
+    headers = {
+        "apikey": SUPABASE_SERVICE_ROLE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+    }
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(url, headers=headers, json=doc)
+            if response.status_code in [200, 201]:
+                return True
+            else:
+                print(f"  ✗ Supabase error: {response.status_code} - {response.text}")
+                return False
+        except Exception as e:
+            print(f"  ✗ Supabase error: {e}")
+            return False
+
+
 async def index_document(doc: Dict):
-    """Index a single document"""
+    """Index a single document to Elasticsearch"""
     url = f"{ELASTIC_CLOUD_URL}/{WILDLIFE_IMAGE_INDEX}/_doc"
     headers = {
         "Authorization": f"ApiKey {ELASTIC_API_KEY}",
@@ -698,17 +736,19 @@ async def index_document(doc: Dict):
         try:
             response = await client.post(url, headers=headers, json=doc)
             if response.status_code in [200, 201]:
-                print(f"✓ Indexed: {doc['common_name']}")
+                return True
             else:
-                print(f"✗ Failed to index {doc['common_name']}: {response.status_code}")
+                print(f"  ✗ Elasticsearch error: {response.status_code}")
+                return False
         except Exception as e:
-            print(f"✗ Error indexing {doc['common_name']}: {e}")
+            print(f"  ✗ Elasticsearch error: {e}")
+            return False
 
 
-async def search_wikimedia_image(species_name: str) -> Optional[str]:
+async def search_wikimedia_image(species_name: str, common_name: str) -> Optional[str]:
     """
     Search for an image on Wikimedia Commons by scientific name.
-    Returns the URL of the first suitable image found.
+    Returns the URL of the first suitable image found, or None if no specific image is available.
     """
     async with httpx.AsyncClient(timeout=30.0) as client:
         # Try to find images in a category matching the scientific name
@@ -716,10 +756,10 @@ async def search_wikimedia_image(species_name: str) -> Optional[str]:
             "action": "query",
             "generator": "categorymembers",
             "gcmtitle": f"Category:{species_name}",
-            "gcmlimit": "5",
+            "gcmlimit": "10",
             "gcmtype": "file",
             "prop": "imageinfo",
-            "iiprop": "url|size|mime",
+            "iiprop": "url|size|mime|extmetadata",
             "iiurlwidth": "800",
             "format": "json"
         }
@@ -732,15 +772,24 @@ async def search_wikimedia_image(species_name: str) -> Optional[str]:
                 for page in data["query"]["pages"].values():
                     if "imageinfo" in page:
                         image_info = page["imageinfo"][0]
-                        if image_info.get("mime") in ["image/jpeg", "image/png"]:
-                            return image_info.get("url")
+                        image_url = image_info.get("url", "")
 
-            # If category search fails, try searching by title
+                        # Check if it's a valid image type
+                        if image_info.get("mime") not in ["image/jpeg", "image/png"]:
+                            continue
+
+                        # Skip if it's a generic Pexels stock photo
+                        if "pexels.com" in image_url or image_url in GENERIC_IMAGE_URLS:
+                            continue
+
+                        return image_url
+
+            # If category search fails, try searching by title with scientific name
             search_params = {
                 "action": "query",
                 "generator": "search",
                 "gsrsearch": f"File:{species_name}",
-                "gsrlimit": "5",
+                "gsrlimit": "10",
                 "gsrnamespace": "6",
                 "prop": "imageinfo",
                 "iiprop": "url|size|mime",
@@ -755,8 +804,16 @@ async def search_wikimedia_image(species_name: str) -> Optional[str]:
                 for page in data["query"]["pages"].values():
                     if "imageinfo" in page:
                         image_info = page["imageinfo"][0]
-                        if image_info.get("mime") in ["image/jpeg", "image/png"]:
-                            return image_info.get("url")
+                        image_url = image_info.get("url", "")
+
+                        if image_info.get("mime") not in ["image/jpeg", "image/png"]:
+                            continue
+
+                        # Skip generic stock photos
+                        if "pexels.com" in image_url or image_url in GENERIC_IMAGE_URLS:
+                            continue
+
+                        return image_url
 
             return None
 
@@ -787,12 +844,13 @@ async def get_species_from_supabase() -> List[Dict]:
 
 
 async def populate_wildlife_images():
-    """Main function to populate the index with Wikimedia images"""
-    print("=" * 60)
-    print("Wildlife Image Population: Wikimedia Commons → Elasticsearch")
-    print("=" * 60)
+    """Main function to populate both Supabase and Elasticsearch with Wikimedia images"""
+    print("=" * 70)
+    print("Wildlife Image Population: Wikimedia Commons → Supabase + Elasticsearch")
+    print("=" * 70)
     print(f"Target index: {WILDLIFE_IMAGE_INDEX}")
-    print(f"Elastic URL: {ELASTIC_CLOUD_URL}\n")
+    print(f"Elastic URL: {ELASTIC_CLOUD_URL}")
+    print(f"Supabase URL: {SUPABASE_URL}\n")
 
     await create_index()
 
@@ -800,19 +858,14 @@ async def populate_wildlife_images():
     species_list = await get_species_from_supabase()
 
     if not species_list:
-        print("✗ No species found. Using fallback sample data...\n")
-        print(f"Indexing {len(SAMPLE_WILDLIFE_DATA)} sample documents...\n")
-        for doc in SAMPLE_WILDLIFE_DATA:
-            await index_document(doc)
-        print(f"\n✓ Finished indexing {len(SAMPLE_WILDLIFE_DATA)} documents")
+        print("✗ No species found in Supabase.")
         return
 
     print(f"✓ Found {len(species_list)} species\n")
     print("Fetching images from Wikimedia Commons...\n")
 
     success_count = 0
-    fallback_count = 0
-    failed_count = 0
+    skipped_count = 0
 
     for species in species_list:
         scientific_name = species.get("scientific_name")
@@ -825,43 +878,47 @@ async def populate_wildlife_images():
         print(f"Processing {common_name} ({scientific_name})...")
 
         # Try to get image from Wikimedia
-        wikimedia_url = await search_wikimedia_image(scientific_name)
+        wikimedia_url = await search_wikimedia_image(scientific_name, common_name)
 
         if wikimedia_url:
             english_name = ENGLISH_NAMES.get(common_name, common_name)
             doc = {
                 "photo_image_url": wikimedia_url,
-                "photo_description": f"{common_name} / {english_name} ({scientific_name}) - Image from Wikimedia Commons",
+                "photo_description": f"{english_name} ({scientific_name}) - Image from Wikimedia Commons",
                 "species_name": scientific_name,
-                "common_name": common_name,
-                "english_name": english_name,
+                "common_name": english_name,
                 "location": "San San Pond Sak Wetlands",
                 "conservation_status": conservation_status
             }
-            await index_document(doc)
-            success_count += 1
-            print(f"  ✓ Indexed with Wikimedia image")
-        else:
-            # Try to find matching sample data as fallback
-            fallback_doc = next((d for d in SAMPLE_WILDLIFE_DATA if d["species_name"] == scientific_name), None)
-            if fallback_doc:
-                await index_document(fallback_doc)
-                fallback_count += 1
-                print(f"  ⚠ Using fallback Pexels image")
+
+            # Save to both Supabase and Elasticsearch
+            supabase_success = await save_to_supabase(doc)
+            elastic_success = await index_document(doc)
+
+            if supabase_success and elastic_success:
+                success_count += 1
+                print(f"  ✓ Saved to Supabase and Elasticsearch")
+            elif supabase_success or elastic_success:
+                success_count += 1
+                print(f"  ⚠ Partial success (check logs above)")
             else:
-                failed_count += 1
-                print(f"  ✗ No image found")
+                skipped_count += 1
+                print(f"  ✗ Failed to save")
+        else:
+            skipped_count += 1
+            print(f"  ✗ No suitable Wikimedia image found (skipping generic stock photos)")
 
         # Be nice to Wikimedia API
         await asyncio.sleep(0.5)
 
-    print("\n" + "=" * 60)
+    print("\n" + "=" * 70)
     print("Summary:")
-    print(f"  ✓ Wikimedia images: {success_count}")
-    print(f"  ⚠ Fallback images: {fallback_count}")
-    print(f"  ✗ No images found: {failed_count}")
+    print(f"  ✓ Successfully saved: {success_count}")
+    print(f"  ✗ Skipped (no specific image): {skipped_count}")
     print(f"  Total processed: {len(species_list)}")
-    print("=" * 60)
+    print("=" * 70)
+    print("\nNote: Only species with specific Wikimedia images were saved.")
+    print("Generic stock photos were skipped to ensure accuracy.")
 
 
 if __name__ == "__main__":
