@@ -205,12 +205,12 @@ export default function AudioChat() {
   };
 
   return (
-    <div className="flex flex-col h-full max-w-4xl mx-auto">
-      <div className="flex justify-center py-8">
+    <div className="flex flex-col h-full max-w-4xl mx-auto relative">
+      <div className="absolute top-4 right-4 z-10">
         <img
           src="/ezgif.com-animated-gif-maker.gif"
           alt="Manatee Animation"
-          className="w-[280px] h-[280px]"
+          className="w-[200px] h-[200px]"
         />
       </div>
 
