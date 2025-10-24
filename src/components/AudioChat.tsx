@@ -15,12 +15,17 @@ export default function AudioChat() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioQueueRef = useRef<AudioBuffer[]>([]);
   const isPlayingRef = useRef(false);
+  const transcriptEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     return () => {
       disconnectAudio();
     };
   }, []);
+
+  useEffect(() => {
+    transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [transcript]);
 
   const connectAudio = async () => {
     try {
@@ -232,6 +237,7 @@ export default function AudioChat() {
             {transcript.map((text, idx) => (
               <p key={idx} className="text-white/90 text-sm">{text}</p>
             ))}
+            <div ref={transcriptEndRef} />
           </div>
         )}
       </div>
