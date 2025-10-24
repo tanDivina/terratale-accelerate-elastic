@@ -56,12 +56,16 @@ function App() {
           </div>
 
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-white/20" style={{ height: '600px' }}>
-            <iframe
-              src="https://san-san-pond-sak-wetlands-ai-guide-935853824529.us-west1.run.app"
-              className="w-full h-full border-0"
-              title="TerraTale AI Chat"
-              allow="microphone"
-            />
+            {chatMode === 'audio' ? (
+              <iframe
+                src="https://san-san-pond-sak-wetlands-ai-guide-935853824529.us-west1.run.app"
+                className="w-full h-full border-0"
+                title="TerraTale AI Chat"
+                allow="microphone"
+              />
+            ) : (
+              <ChatInterface />
+            )}
           </div>
         </div>
       </section>
