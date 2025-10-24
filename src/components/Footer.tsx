@@ -42,7 +42,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-stone-800 pt-8 text-center text-sm text-stone-500">
-          <p>© 2025 San San Pond Sak Wetlands. All rights reserved.</p>
+          <p>© 2025 TerraTale by @DorienVibecodes. All rights reserved.</p>
         </div>
       </div>
     </footer>
