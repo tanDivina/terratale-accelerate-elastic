@@ -237,7 +237,8 @@ async function getContextualSearchQuery(message: string, conversationId?: string
       const content = msg.content || '';
 
       // Look for patterns like "Boat-billed Heron" or "Great Blue Heron"
-      const speciesPattern = /\b([A-Z][a-z]+(?:-[A-Z][a-z]+)?(?:\s+[A-Z][a-z]+)*)\s+(Heron|Egret|Toucan|Parrot|Monkey|Sloth|Jaguar|Manatee|Turtle|Caiman|Crocodile|Frog|Snake|Bat|Dolphin|Kingfisher|Peccary)\b/g;
+      // This pattern handles names with hyphens and multiple words before the animal type
+      const speciesPattern = /([A-Z][a-z]+(?:-[a-z]+)?(?:\s+[A-Z][a-z]+)*)\s+(Heron|Egret|Toucan|Parrot|Monkey|Sloth|Jaguar|Manatee|Turtle|Caiman|Crocodile|Frog|Snake|Bat|Dolphin|Kingfisher|Peccary|Macaw|Anteater|Agouti|Paca|Opossum|Tamandua)\b/gi;
       const matches = content.match(speciesPattern);
 
       if (matches && matches.length > 0) {
