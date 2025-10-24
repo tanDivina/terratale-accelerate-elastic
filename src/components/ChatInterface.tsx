@@ -42,13 +42,17 @@ export default function ChatInterface() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<any>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   };
 
   useEffect(() => {
-    scrollToBottom();
+    const timer = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+    return () => clearTimeout(timer);
   }, [messages]);
 
   useEffect(() => {
@@ -206,6 +210,12 @@ export default function ChatInterface() {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
     setInput('');
+
+    inputRef.current?.blur();
+
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
 
     try {
       if (!currentConversationId) {
@@ -448,6 +458,7 @@ export default function ChatInterface() {
                 {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               </button>
               <input
+                ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
