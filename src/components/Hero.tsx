@@ -15,7 +15,7 @@ export default function Hero() {
           <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
             <iframe
               className="absolute top-0 left-0 w-full h-full rounded-lg shadow-2xl"
-              src="https://www.youtube.com/embed/9n6Jb-N5KnY"
+              src="https://www.youtube.com/embed/9n6Jb-N5KnY?modestbranding=1&rel=0&showinfo=0"
               title="San San Pond Sak Wetlands Video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
