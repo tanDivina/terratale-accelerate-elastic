@@ -22,9 +22,17 @@ function App() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Chat with Mateo the Manatee
-            </h2>
+            <div className="flex items-center justify-center gap-6 mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
+                Chat with Mateo the Manatee
+              </h2>
+              <img
+                src="/ezgif.com-animated-gif-maker.gif"
+                alt="Mateo the Manatee"
+                className="w-24 h-24"
+                style={{ backgroundColor: '#8db9ca' }}
+              />
+            </div>
             <p className="text-xl text-gray-600 mb-8">
               Choose your preferred way to explore the wetlands
             </p>
@@ -57,7 +65,12 @@ function App() {
 
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-white/20" style={{ height: '600px' }}>
             {chatMode === 'audio' ? (
-              <AudioChat />
+              <iframe
+                src="https://san-san-pond-sak-wetlands-ai-guide-935853824529.us-west1.run.app"
+                className="w-full h-full border-0"
+                title="TerraTale AI Chat"
+                allow="microphone"
+              />
             ) : (
               <ChatInterface />
             )}
