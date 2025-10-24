@@ -5,9 +5,12 @@ export default function Header() {
     <header className="bg-[#f5f3ed] border-b border-stone-200">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Leaf className="w-6 h-6 text-stone-900" />
-            <span className="text-xl font-light tracking-wide text-stone-900">San San Pond Sak</span>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-3">
+              <Leaf className="w-6 h-6 text-stone-900" />
+              <span className="text-xl font-light tracking-wide text-stone-900">TerraTale</span>
+            </div>
+            <p className="text-xs text-stone-600 ml-9 mt-0.5">A Conversational Eco-Guide for the San San Pond Sak Wetlands</p>
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
