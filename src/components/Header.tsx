@@ -1,4 +1,4 @@
-import manateeIcon from '../assets/Generated Image October 24, 2025 - 9_42AM.png';
+import { Leaf } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -7,7 +7,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <div className="flex items-center gap-3">
-              <img src={manateeIcon} alt="Manatee" className="w-8 h-8 object-contain" />
+              <Leaf className="w-6 h-6 text-stone-900" />
               <span className="text-xl font-light tracking-wide text-stone-900">TerraTale</span>
             </div>
             <p className="text-xs text-stone-600 ml-9 mt-0.5">A Conversational Eco-Guide for the San San Pond Sak Wetlands</p>

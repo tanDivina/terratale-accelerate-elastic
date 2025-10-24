@@ -1,5 +1,4 @@
-import { Mail, Globe } from 'lucide-react';
-import manateeIcon from '../assets/Generated Image October 24, 2025 - 9_42AM.png';
+import { Leaf, Mail, Globe } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -8,11 +7,12 @@ export default function Footer() {
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src={manateeIcon} alt="Manatee" className="w-7 h-7 object-contain" />
+              <Leaf className="w-5 h-5" />
               <span className="text-lg font-light tracking-wide">TerraTale</span>
             </div>
             <p className="text-sm text-stone-400 leading-relaxed">
-              Conversational eco-guide for Bocas del Toro's wetlands.
+              Protecting and preserving the natural heritage of Bocas del Toro's wetlands
+              for future generations.
             </p>
           </div>
 
