@@ -288,9 +288,10 @@ async def populate_wildlife_images():
             english_name = ENGLISH_NAMES.get(common_name, common_name)
             doc = {
                 "photo_image_url": wikimedia_url,
-                "photo_description": f"{english_name} ({scientific_name}) - Image from Wikimedia Commons",
+                "photo_description": f"{common_name} / {english_name} ({scientific_name}) - Image from Wikimedia Commons",
                 "species_name": scientific_name,
-                "common_name": english_name,
+                "common_name": common_name,
+                "english_name": english_name,
                 "location": "San San Pond Sak Wetlands",
                 "conservation_status": conservation_status
             }
