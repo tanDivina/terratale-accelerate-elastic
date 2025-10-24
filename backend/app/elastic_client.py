@@ -58,7 +58,7 @@ class ElasticAgentClient:
             "query": {
                 "multi_match": {
                     "query": query,
-                    "fields": ["photo_description", "species_name", "common_name"],
+                    "fields": ["photo_description", "species_name", "common_name", "english_name", "natural_description"],
                     "fuzziness": "AUTO"
                 }
             },
