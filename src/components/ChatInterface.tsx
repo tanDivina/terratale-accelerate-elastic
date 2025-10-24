@@ -344,12 +344,12 @@ export default function ChatInterface() {
         </div>
         <div className="flex flex-wrap gap-2">
           {[
-            { label: 'Critically Endangered', value: 'critically endangered', color: 'bg-red-600 hover:bg-red-700' },
+            { label: 'Critically Endangered', value: 'critically endangered', color: 'bg-red-700 hover:bg-red-800' },
             { label: 'Endangered', value: 'endangered', color: 'bg-orange-600 hover:bg-orange-700' },
             { label: 'Vulnerable', value: 'vulnerable', color: 'bg-amber-600 hover:bg-amber-700' },
-            { label: 'Near Threatened', value: 'Near Threatened', color: 'bg-yellow-600 hover:bg-yellow-700' },
-            { label: 'Threatened', value: 'threatened', color: 'bg-rose-600 hover:bg-rose-700' },
-            { label: 'Declining', value: 'declining', color: 'bg-purple-600 hover:bg-purple-700' }
+            { label: 'Near Threatened', value: 'Near Threatened', color: 'bg-teal-600 hover:bg-teal-700' },
+            { label: 'Threatened', value: 'threatened', color: 'bg-emerald-700 hover:bg-emerald-800' },
+            { label: 'Declining', value: 'declining', color: 'bg-stone-600 hover:bg-stone-700' }
           ].map((status) => (
             <button
               key={status.value}
