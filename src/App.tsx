@@ -20,22 +20,22 @@ function App() {
       <section id="voice-chat" className="py-20 relative" style={{ backgroundColor: '#F9FAFA' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-6 mb-4">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
+            <div className="flex items-center justify-center gap-8 mb-8">
+              <h2 className="text-5xl md:text-6xl font-bold text-gray-900">
                 Meet Mateo the Manatee!
               </h2>
               <img
                 src="/ezgif.com-animated-gif-maker.gif"
                 alt="Mateo the Manatee"
-                className="w-48 h-48 animate-bounce"
+                className="w-64 h-64 animate-bounce"
                 style={{
                   backgroundColor: 'transparent',
-                  animationDuration: '3s',
+                  animationDuration: '5s',
                   animationTimingFunction: 'ease-in-out'
                 }}
               />
             </div>
-            <p className="text-xl text-gray-900 mb-8">
+            <p className="text-2xl text-gray-900">
               Have a LIVE voice chat with Mateo about the San San Pond Sak Wetlands
             </p>
           </div>
