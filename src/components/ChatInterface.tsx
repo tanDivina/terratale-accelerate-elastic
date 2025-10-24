@@ -312,14 +312,6 @@ export default function ChatInterface() {
 
   return (
     <div className="flex flex-col h-full relative">
-      <div className="absolute -top-4 right-0 z-20 pointer-events-none manatee-float">
-        <img
-          src="/ezgif.com-animated-gif-maker.gif"
-          alt="Friendly Manatee"
-          className="w-[280px] h-[280px]"
-        />
-      </div>
-
       <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-[#f5fffe]">
         <div className="flex gap-2">
           <button
