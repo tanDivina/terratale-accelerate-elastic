@@ -23,7 +23,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Chat with TerraTale AI
+              Chat with Mateo the Manatee
             </h2>
             <p className="text-xl text-gray-600 mb-8">
               Choose your preferred way to explore the wetlands
