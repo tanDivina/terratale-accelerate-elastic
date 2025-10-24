@@ -134,11 +134,11 @@ export default function WildlifeGallery() {
                 className="group cursor-pointer"
                 onClick={() => setSelectedImage(image)}
               >
-                <div className="relative overflow-hidden rounded-xl mb-3 aspect-square">
+                <div className="relative overflow-hidden rounded-xl mb-3 aspect-square bg-stone-100">
                   <img
                     src={image.photo_image_url}
                     alt={image.common_name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-stone-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   {image.conservation_status && (
