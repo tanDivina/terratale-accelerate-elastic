@@ -83,6 +83,23 @@ Deno.serve(async (req: Request) => {
         queryGemini(message, conversationId)
       ]);
 
+      if (images.length === 0) {
+        const enhancedResponse = await queryGemini(
+          `${message}\n\nNote: We don't have photos of "${searchQuery}" in our collection yet. Include this information naturally in your response.`,
+          conversationId
+        );
+
+        return new Response(
+          JSON.stringify({
+            type: 'text',
+            content: enhancedResponse,
+          }),
+          {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
       return new Response(
         JSON.stringify({
           type: 'combined',
@@ -98,6 +115,24 @@ Deno.serve(async (req: Request) => {
     if (shouldSearchImages && elasticUrl && elasticApiKey) {
       const searchQuery = await getContextualSearchQuery(messageLower, conversationId);
       const images = await searchWildlifeImages(searchQuery);
+
+      if (images.length === 0) {
+        const noImagesResponse = await queryGemini(
+          `The user asked for photos of "${searchQuery}" but we don't have any photos of that species in our collection yet. Acknowledge this politely and provide a brief interesting description of the species if it's found in San San Pond Sak, or suggest they explore other wildlife we have documented.`,
+          conversationId
+        );
+
+        return new Response(
+          JSON.stringify({
+            type: 'text',
+            content: noImagesResponse,
+          }),
+          {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
       return new Response(
         JSON.stringify({
           type: 'image_search_results',
@@ -363,7 +398,7 @@ async function queryGemini(
 
   const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${geminiApiKey}`;
 
-  const systemPrompt = `You are TerraTale AI, a knowledgeable guide for the San San Pond Sak Wetlands in Bocas del Toro, Panama.\n\nYou help visitors:\n- Learn about the wetlands' diverse wildlife including jaguars, manatees, sea turtles, and hundreds of bird species\n- Understand the importance of this Ramsar-designated protected area\n- Explore the unique ecosystem including mangroves, peat swamps, and coastal forests\n- Discover conservation efforts and sustainable tourism practices\n\nProvide engaging, educational responses that inspire appreciation for this natural treasure. Keep responses concise and conversational.`;
+  const systemPrompt = `You are TerraTale AI, a knowledgeable guide for the San San Pond Sak Wetlands in Bocas del Toro, Panama.\n\nYou help visitors:\n- Learn about the wetlands' diverse wildlife including jaguars, manatees, sea turtles, and hundreds of bird species\n- Understand the importance of this Ramsar-designated protected area\n- Explore the unique ecosystem including mangroves, peat swamps, and coastal forests\n- Discover conservation efforts and sustainable tourism practices\n- Show photos from our wildlife image collection when available\n\nIMPORTANT: When photos are available, they will be displayed automatically. NEVER say "As an AI, I can't display images" or similar phrases. If specific photos aren't in our collection, simply say "we don't have photos of [species] in our collection yet" and offer to show other related wildlife.\n\nProvide engaging, educational responses that inspire appreciation for this natural treasure. Keep responses concise and conversational.`;
 
   let conversationHistory = '';
 
