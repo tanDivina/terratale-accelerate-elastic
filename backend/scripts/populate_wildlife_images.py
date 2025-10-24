@@ -39,6 +39,8 @@ ENGLISH_NAMES = {
     "Zopilote cabecinegro": "Black Vulture",
     "Perezoso de tres dedos": "Three-toed Sloth",
     "Perezoso de dos dedos": "Two-toed Sloth",
+    "Oso perezoso de tres dedos": "Brown-throated Sloth",
+    "Oso perezoso de dos dedos": "Hoffmann's Two-toed Sloth",
     "Mono aullador": "Howler Monkey",
     "Mono araña": "Spider Monkey",
     "Mono capuchino": "White-faced Capuchin",
