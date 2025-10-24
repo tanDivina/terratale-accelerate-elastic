@@ -16,7 +16,7 @@ interface WildlifeImage {
 export default function WildlifeGallery() {
   const [images, setImages] = useState<WildlifeImage[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<WildlifeImage | null>(null);
   const [searching, setSearching] = useState(false);
 
@@ -34,10 +34,13 @@ export default function WildlifeGallery() {
 
   async function fetchImages(query: string) {
     if (query === '') {
-      setLoading(true);
-    } else {
-      setSearching(true);
+      setImages([]);
+      setLoading(false);
+      setSearching(false);
+      return;
     }
+
+    setSearching(true);
 
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -145,9 +148,11 @@ export default function WildlifeGallery() {
                     </div>
                   )}
                 </div>
-                <h3 className="text-lg font-medium text-stone-900 mb-1">{image.common_name}</h3>
+                <h3 className="text-lg font-medium text-stone-900 mb-1">
+                  {image.english_name || image.common_name}
+                </h3>
                 {image.english_name && image.english_name !== image.common_name && (
-                  <p className="text-sm text-stone-600">{image.english_name}</p>
+                  <p className="text-sm text-stone-600">{image.common_name}</p>
                 )}
                 <p className="text-sm text-stone-500 italic">{image.species_name}</p>
               </div>
