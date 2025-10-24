@@ -8,7 +8,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Leaf className="w-5 h-5" />
-              <span className="text-lg font-light tracking-wide">San San Pond Sak</span>
+              <span className="text-lg font-light tracking-wide">TerraTale</span>
             </div>
             <p className="text-sm text-stone-400 leading-relaxed">
               Protecting and preserving the natural heritage of Bocas del Toro's wetlands
@@ -22,7 +22,6 @@ export default function Footer() {
               <li><a href="#explore" className="hover:text-white transition-colors">Explore</a></li>
               <li><a href="#wildlife" className="hover:text-white transition-colors">Wildlife</a></li>
               <li><a href="#about" className="hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#resources" className="hover:text-white transition-colors">Resources</a></li>
             </ul>
           </div>
 
