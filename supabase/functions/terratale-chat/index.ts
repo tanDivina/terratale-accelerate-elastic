@@ -138,7 +138,11 @@ Deno.serve(async (req: Request) => {
 function checkIfImageSearch(message: string): boolean {
   const explicitImageKeywords = [
     'show me', 'show images', 'show pictures', 'show photos',
-    'pictures of', 'photos of', 'images of'
+    'pictures of', 'photos of', 'images of',
+    'do you have photos', 'do you have pictures', 'do you have images',
+    'got any photos', 'got any pictures', 'got any images',
+    'any photos', 'any pictures', 'any images',
+    'can i see', 'let me see', 'want to see'
   ];
 
   for (const phrase of explicitImageKeywords) {
@@ -159,8 +163,11 @@ function checkIfImageSearch(message: string): boolean {
 }
 
 async function getContextualSearchQuery(message: string, conversationId?: string): Promise<string> {
-  const vagueQuestions = ['what do they look like', 'show me', 'pictures', 'images', 'photos', 'what are they'];
-  const isVague = vagueQuestions.some(q => message.includes(q)) && message.split(' ').length < 6;
+  const vagueQuestions = [
+    'what do they look like', 'show me', 'pictures', 'images', 'photos', 'what are they',
+    'do you have photos', 'do you have pictures', 'any photos', 'any pictures', 'got photos'
+  ];
+  const isVague = vagueQuestions.some(q => message.includes(q)) && message.split(' ').length < 8;
 
   if (!isVague || !conversationId) {
     return message;
