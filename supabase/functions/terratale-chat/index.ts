@@ -193,12 +193,28 @@ async function searchWildlifeImages(query: string): Promise<any[]> {
   } else {
     searchBody = {
       query: {
-        multi_match: {
-          query: query,
-          fields: ['photo_description', 'species_name', 'common_name', 'english_name', 'conservation_status'],
-          fuzziness: 'AUTO',
-        },
+        bool: {
+          should: [
+            {
+              multi_match: {
+                query: query,
+                fields: ['english_name^3', 'common_name^3', 'species_name^2'],
+                type: 'best_fields',
+                fuzziness: '1',
+              }
+            },
+            {
+              multi_match: {
+                query: query,
+                fields: ['photo_description'],
+                type: 'phrase',
+              }
+            }
+          ],
+          minimum_should_match: 1,
+        }
       },
+      min_score: 2.0,
       size: 6,
     };
   }
