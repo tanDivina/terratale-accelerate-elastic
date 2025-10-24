@@ -21,6 +21,9 @@ interface ElasticSearchResponse {
         photo_description: string;
         species_name?: string;
         common_name?: string;
+        english_name?: string;
+        location?: string;
+        conservation_status?: string;
       };
     }>;
   };
@@ -188,7 +191,7 @@ async function searchWildlifeImages(query: string): Promise<any[]> {
           conservation_status: matchedStatus
         }
       },
-      size: 12,
+      size: 50,
     };
   } else {
     searchBody = {
@@ -215,7 +218,7 @@ async function searchWildlifeImages(query: string): Promise<any[]> {
         }
       },
       min_score: 2.0,
-      size: 6,
+      size: 20,
     };
   }
 
@@ -235,12 +238,56 @@ async function searchWildlifeImages(query: string): Promise<any[]> {
   const result: ElasticSearchResponse = await response.json();
   const hits = result.hits?.hits || [];
 
-  return hits.map(hit => ({
+  const allImages = hits.map(hit => ({
     _id: hit._id,
     _score: hit._score,
+    ...hit._source,
+  }));
+
+  const speciesMap = new Map<string, any>();
+
+  for (const image of allImages) {
+    const existing = speciesMap.get(image.species_name || '');
+
+    if (!existing) {
+      speciesMap.set(image.species_name || '', image);
+    } else {
+      const currentDesc = (image.photo_description || '').toLowerCase();
+      const existingDesc = (existing.photo_description || '').toLowerCase();
+      const currentUrl = (image.photo_image_url || '').toLowerCase();
+      const existingUrl = (existing.photo_image_url || '').toLowerCase();
+
+      const isCemetery = currentUrl.includes('cemetery') || currentDesc.includes('cemetery') ||
+                        currentDesc.includes('grave') || currentDesc.includes('tomb');
+      const existingIsCemetery = existingUrl.includes('cemetery') || existingDesc.includes('cemetery') ||
+                                 existingDesc.includes('grave') || existingDesc.includes('tomb');
+
+      if (existingIsCemetery && !isCemetery) {
+        speciesMap.set(image.species_name || '', image);
+      } else if (!existingIsCemetery && !isCemetery && image._score > existing._score) {
+        speciesMap.set(image.species_name || '', image);
+      }
+    }
+  }
+
+  const queryLowerForCheck = query.toLowerCase();
+  const conservationStatusesCheck = [
+    'critically endangered', 'endangered', 'vulnerable',
+    'near threatened', 'threatened', 'declining'
+  ];
+  const isConservationSearch = conservationStatusesCheck.some(status =>
+    queryLowerForCheck.includes(status) && queryLowerForCheck.includes('species')
+  );
+
+  const maxResults = isConservationSearch ? 12 : 6;
+  const uniqueImages = Array.from(speciesMap.values()).slice(0, maxResults);
+
+  return uniqueImages.map(img => ({
+    _id: img._id,
+    _score: img._score,
     fields: {
-      photo_image_url: [hit._source.photo_image_url],
-      photo_description: [hit._source.photo_description],
+      photo_image_url: [img.photo_image_url],
+      photo_description: [img.english_name ? `${img.english_name} (${img.species_name})` : img.photo_description],
     },
   }));
 }
