@@ -312,11 +312,11 @@ export default function ChatInterface() {
 
   return (
     <div className="flex flex-col h-full relative">
-      <div className="absolute -top-12 right-8 z-20 pointer-events-none manatee-float">
+      <div className="absolute -top-4 right-8 z-20 pointer-events-none manatee-float">
         <img
           src="/ezgif.com-animated-gif-maker.gif"
           alt="Friendly Manatee"
-          className="w-[140px] h-[140px]"
+          className="w-[200px] h-[200px]"
         />
       </div>
 
