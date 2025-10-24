@@ -57,7 +57,7 @@ function App() {
               Text Chat
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Ask questions and explore the wetlands using natural language. The chat can show you images of over 60 types of fauna & flora in our library!
+              Ask questions and explore the wetlands using natural language. The chat can show you images of over 60 types of fauna & flora that are found in the San San Pond Sak Wetlands!
             </p>
           </div>
 
