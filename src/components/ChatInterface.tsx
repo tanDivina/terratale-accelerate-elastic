@@ -312,46 +312,12 @@ export default function ChatInterface() {
 
   return (
     <div className="flex flex-col h-full relative">
-      {/* Friendly Manatee Character */}
       <div className="absolute -top-12 right-8 z-20 pointer-events-none manatee-float">
-        <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Manatee body */}
-          <ellipse cx="70" cy="90" rx="45" ry="35" fill="#8B9D9B" opacity="0.95"/>
-
-          {/* Tail */}
-          <path d="M 25 90 Q 15 85 10 95 Q 15 105 25 100 Z" fill="#7A8C8A"/>
-
-          {/* Flippers */}
-          <ellipse cx="50" cy="105" rx="12" ry="20" fill="#7A8C8A" transform="rotate(-30 50 105)"/>
-          <ellipse cx="90" cy="105" rx="12" ry="20" fill="#7A8C8A" transform="rotate(30 90 105)"/>
-
-          {/* Head leaning on edge */}
-          <ellipse cx="95" cy="75" rx="25" ry="22" fill="#8B9D9B"/>
-
-          {/* Snout */}
-          <ellipse cx="110" cy="75" rx="12" ry="10" fill="#7A8C8A"/>
-          <ellipse cx="110" cy="73" rx="6" ry="5" fill="#5A6C6A"/>
-
-          {/* Eyes - friendly and sleepy */}
-          <ellipse cx="95" cy="70" rx="3" ry="5" fill="#2C3E3C"/>
-          <ellipse cx="104" cy="70" rx="3" ry="5" fill="#2C3E3C"/>
-
-          {/* White eye shine */}
-          <circle cx="96" cy="68" r="1" fill="white"/>
-          <circle cx="105" cy="68" r="1" fill="white"/>
-
-          {/* Whisker dots */}
-          <circle cx="108" cy="78" r="1.5" fill="#5A6C6A"/>
-          <circle cx="112" cy="76" r="1.5" fill="#5A6C6A"/>
-          <circle cx="112" cy="80" r="1.5" fill="#5A6C6A"/>
-
-          {/* Arm/flipper leaning */}
-          <ellipse cx="115" cy="85" rx="8" ry="15" fill="#7A8C8A" transform="rotate(45 115 85)"/>
-
-          {/* Subtle blush */}
-          <ellipse cx="90" cy="75" rx="4" ry="3" fill="#D4A5A5" opacity="0.4"/>
-          <ellipse cx="108" cy="75" rx="4" ry="3" fill="#D4A5A5" opacity="0.4"/>
-        </svg>
+        <img
+          src="/ezgif.com-animated-gif-maker.gif"
+          alt="Friendly Manatee"
+          className="w-[140px] h-[140px]"
+        />
       </div>
 
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
