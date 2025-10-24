@@ -12,7 +12,7 @@ load_dotenv()
 
 # Supabase configuration
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip('/')
-SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 
 # Elasticsearch configuration
 ELASTIC_CLOUD_URL = os.getenv("ELASTIC_CLOUD_URL", "").rstrip('/')
@@ -24,8 +24,8 @@ async def fetch_images_from_supabase() -> List[Dict]:
     """Fetch all wildlife images from Supabase"""
     url = f"{SUPABASE_URL}/rest/v1/wildlife_images?select=*"
     headers = {
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
+        "apikey": SUPABASE_SERVICE_ROLE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
     }
 
     async with httpx.AsyncClient() as client:

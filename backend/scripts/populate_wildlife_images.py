@@ -218,8 +218,8 @@ async def get_species_from_supabase() -> List[Dict]:
     """Fetch all species from Supabase wildlife_species table."""
     url = f"{SUPABASE_URL}/rest/v1/wildlife_species?select=id,scientific_name,common_name,conservation_status,category"
     headers = {
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
+        "apikey": SUPABASE_SERVICE_ROLE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
     }
 
     async with httpx.AsyncClient(timeout=30.0) as client:
