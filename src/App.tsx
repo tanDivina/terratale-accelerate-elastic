@@ -25,7 +25,7 @@ function App() {
                 Meet Mateo the Manatee!
               </h2>
               <img
-                src="/ezgif.com-animated-gif-maker.gif"
+                src="/ezgif.com-crop.gif"
                 alt="Mateo the Manatee"
                 className="w-80 h-80 animate-bounce"
                 style={{
