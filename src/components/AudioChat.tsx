@@ -15,7 +15,7 @@ export default function AudioChat() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioQueueRef = useRef<AudioBuffer[]>([]);
   const isPlayingRef = useRef(false);
-  const transcriptEndRef = useRef<HTMLDivElement | null>(null);
+  const transcriptContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     return () => {
@@ -24,7 +24,10 @@ export default function AudioChat() {
   }, []);
 
   useEffect(() => {
-    transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (transcriptContainerRef.current) {
+      const container = transcriptContainerRef.current;
+      container.scrollTop = container.scrollHeight;
+    }
   }, [transcript]);
 
   const connectAudio = async () => {
@@ -232,12 +235,13 @@ export default function AudioChat() {
         )}
 
         {transcript.length > 0 && (
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 space-y-2">
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
             <h4 className="text-white font-medium mb-2">Conversation:</h4>
-            {transcript.map((text, idx) => (
-              <p key={idx} className="text-white/90 text-sm">{text}</p>
-            ))}
-            <div ref={transcriptEndRef} />
+            <div ref={transcriptContainerRef} className="max-h-[400px] overflow-y-auto space-y-2">
+              {transcript.map((text, idx) => (
+                <p key={idx} className="text-white/90 text-sm">{text}</p>
+              ))}
+            </div>
           </div>
         )}
       </div>
