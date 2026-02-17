@@ -13,8 +13,8 @@ Deno.serve(async (req: Request) => {
   }
 
   const apiKey = Deno.env.get('GOOGLE_API_KEY');
-  const model = 'gemini-2.5-flash';
-  const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+  const model = 'gemini-2.0-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
   
   const response = await fetch(url, {
     method: 'POST',
