@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import type { WildlifeImage } from '../types/wildlife';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -15,7 +16,7 @@ export interface Message {
   type: 'user' | 'assistant' | 'images';
   content: string;
   audio_url?: string;
-  images?: any;
+  images?: WildlifeImage[];
   created_at: string;
 }
 

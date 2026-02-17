@@ -1,27 +1,24 @@
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect } from 'react';
+import type { WildlifeImage } from '../types/wildlife';
 
-interface WildlifeImage {
-  id: string;
-  photo_image_url: string;
-  photo_description: string;
-  species_name: string;
-  common_name: string;
-  english_name?: string;
-  location: string;
-  conservation_status: string | null;
-}
-
-interface ImageLightboxProps {
-  images?: Array<{
-    url: string;
-    description: string;
-  }>;
-  currentIndex?: number;
+interface MultiImageProps {
+  images: Array<{ url: string; description: string }>;
+  currentIndex: number;
   onClose: () => void;
-  onNavigate?: (index: number) => void;
-  image?: WildlifeImage;
+  onNavigate: (index: number) => void;
+  image?: never;
 }
+
+interface SingleImageProps {
+  image: WildlifeImage;
+  onClose: () => void;
+  images?: never;
+  currentIndex?: never;
+  onNavigate?: never;
+}
+
+type ImageLightboxProps = MultiImageProps | SingleImageProps;
 
 export default function ImageLightbox({ images, currentIndex = 0, onClose, onNavigate, image }: ImageLightboxProps) {
   const isSingleImage = !!image;
@@ -30,9 +27,9 @@ export default function ImageLightbox({ images, currentIndex = 0, onClose, onNav
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
-      if (hasMultipleImages && onNavigate) {
+      if (hasMultipleImages && onNavigate && images) {
         if (e.key === 'ArrowLeft' && currentIndex > 0) onNavigate(currentIndex - 1);
-        if (e.key === 'ArrowRight' && currentIndex < images!.length - 1) onNavigate(currentIndex + 1);
+        if (e.key === 'ArrowRight' && currentIndex < images.length - 1) onNavigate(currentIndex + 1);
       }
     };
 
@@ -49,11 +46,15 @@ export default function ImageLightbox({ images, currentIndex = 0, onClose, onNav
     return (
       <div
         className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${image.english_name || image.common_name} - Species detail`}
         onClick={onClose}
       >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-white hover:text-stone-300 transition-colors z-10"
+          aria-label="Close image viewer"
         >
           <X className="w-8 h-8" />
         </button>
@@ -64,7 +65,7 @@ export default function ImageLightbox({ images, currentIndex = 0, onClose, onNav
         >
           <img
             src={image.photo_image_url}
-            alt={image.english_name || image.common_name}
+            alt={`${image.english_name || image.common_name} (${image.species_name})`}
             className="max-w-full max-h-[75vh] object-contain rounded-lg"
           />
           <div className="mt-6 px-8 py-4 bg-stone-900 bg-opacity-90 rounded-lg max-w-2xl">
@@ -86,18 +87,22 @@ export default function ImageLightbox({ images, currentIndex = 0, onClose, onNav
     );
   }
 
-  if (!hasMultipleImages) return null;
+  if (!hasMultipleImages || !images) return null;
 
-  const currentImage = images![currentIndex];
+  const currentImage = images[currentIndex];
 
   return (
     <div
       className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Image ${currentIndex + 1} of ${images.length}`}
       onClick={onClose}
     >
       <button
         onClick={onClose}
         className="absolute top-4 right-4 text-white hover:text-stone-300 transition-colors z-10"
+        aria-label="Close image viewer"
       >
         <X className="w-8 h-8" />
       </button>
@@ -109,18 +114,20 @@ export default function ImageLightbox({ images, currentIndex = 0, onClose, onNav
             onNavigate(currentIndex - 1);
           }}
           className="absolute left-4 text-white hover:text-stone-300 transition-colors z-10"
+          aria-label="Previous image"
         >
           <ChevronLeft className="w-12 h-12" />
         </button>
       )}
 
-      {currentIndex < images!.length - 1 && onNavigate && (
+      {currentIndex < images.length - 1 && onNavigate && (
         <button
           onClick={(e) => {
             e.stopPropagation();
             onNavigate(currentIndex + 1);
           }}
           className="absolute right-4 text-white hover:text-stone-300 transition-colors z-10"
+          aria-label="Next image"
         >
           <ChevronRight className="w-12 h-12" />
         </button>
@@ -138,7 +145,7 @@ export default function ImageLightbox({ images, currentIndex = 0, onClose, onNav
         <div className="mt-4 px-6 py-3 bg-stone-900 bg-opacity-80 rounded-lg max-w-2xl">
           <p className="text-white text-center">{currentImage.description}</p>
           <p className="text-stone-400 text-center text-sm mt-2">
-            {currentIndex + 1} / {images!.length}
+            {currentIndex + 1} / {images.length}
           </p>
         </div>
       </div>

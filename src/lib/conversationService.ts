@@ -1,4 +1,5 @@
 import { supabase, Message, Conversation } from './supabase';
+import type { WildlifeImage } from '../types/wildlife';
 
 export async function createConversation(firstMessage: string): Promise<string> {
   const title = firstMessage.slice(0, 50) + (firstMessage.length > 50 ? '...' : '');
@@ -18,7 +19,7 @@ export async function saveMessage(
   type: 'user' | 'assistant' | 'images',
   content: string,
   audioUrl?: string,
-  images?: any
+  images?: WildlifeImage[]
 ): Promise<void> {
   const { error: messageError } = await supabase
     .from('messages')
