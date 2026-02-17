@@ -411,7 +411,7 @@ async function queryGemini(
   conversationId?: string
 ): Promise<string> {
   const geminiApiKey = Deno.env.get('GOOGLE_API_KEY');
-  const model = 'gemini-2.5-flash';
+  const model = 'gemini-1.5-flash';
 
   if (!geminiApiKey) {
     throw new Error('Gemini API key not configured');
